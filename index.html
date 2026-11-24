@@ -1,0 +1,1494 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Đấu trường Thiết bị</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']]},svg:{fontCache:'global'},options:{enableMenu:false},
+ startup:{typeset:false,ready(){MathJax.startup.defaultReady();window.__mjReady=true;if(window.__typeset)window.__typeset();}}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+<style>
+/* Giao diện sáng, nhiều màu cho máy chiếu: thanh trên (vòng + điểm) · sân khấu · thanh điều khiển. Mỗi vòng một màu chủ đạo (--rc, --rc2). */
+:root{
+  --bg:#F5F3FF; --stage:#FFFFFF; --ink:#1A1F3A; --ink2:#454B6B; --muted:#6E7391; --line:#DCDDEB; --soft:#EEEDF8;
+  --brand:#1B2A6B; --gold:#FACC15; --ok:#16A34A; --ok-bg:#DCFCE7; --bad:#E11D48; --bad-bg:#FFE4E6;
+  --t0:#7C3AED; --t1:#0D9488; --t2:#EA580C; --t3:#2563EB;
+  --oA:#F43F5E; --oB:#3B82F6; --oC:#F59E0B; --oD:#22C55E;
+  --cL:#F26B3A; --cL2:#FFB13B; --cR:#2F7DE1; --cR2:#06B6D4;
+  --display:'Lexend','Be Vietnam Pro',system-ui,sans-serif; --body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;color:var(--ink);font:clamp(15px,1.05vw,20px)/1.5 var(--body);
+  background:radial-gradient(1100px 600px at 0% 0%,#FFE4D3 0,transparent 60%),radial-gradient(900px 600px at 100% 0%,#DCE9FF 0,transparent 55%),radial-gradient(1000px 700px at 50% 110%,#E3F9EC 0,transparent 60%),var(--bg);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+mjx-container{color:inherit}
+.app{max-width:1640px;margin:0 auto;padding-block:12px 18px;display:flex;flex-direction:column;gap:12px;min-height:100%}
+
+/* thanh trên */
+.top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:linear-gradient(110deg,#1B2A6B,#4B2A8C 55%,#9D2C7A);color:#fff;border-radius:18px;padding:10px 14px;box-shadow:0 8px 24px #4B2A8C33}
+.logo{font-family:var(--display);font-weight:900;font-size:1.25em;white-space:nowrap}
+.logo small{display:block;font:600 .6em/1.2 var(--body);opacity:.8;letter-spacing:.06em;text-transform:uppercase}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs button{border:0;background:rgba(255,255,255,.08);color:#E4E6F7;border-radius:12px;padding:6px 11px;font-weight:700;font-size:.86em;display:flex;gap:6px;align-items:center}
+.tabs button i{font-style:normal;width:1.55em;height:1.55em;border-radius:50%;display:grid;place-items:center;background:var(--rc);color:#fff;font-size:.85em}
+.tabs button[aria-current="page"]{background:#fff;color:var(--brand);box-shadow:0 0 0 3px var(--rc)}
+.tabs button:not([aria-current]):hover{background:rgba(255,255,255,.2)}
+#board{margin-left:auto}
+.board4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:min(100%,660px)}
+.team{background:#fff;color:var(--ink);border-radius:14px;padding:6px 10px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 8px;border-left:8px solid var(--tc);position:relative}
+.team .nm{font-weight:800;font-size:.85em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tc)}
+.team .sc{grid-row:span 3;font-family:var(--display);font-weight:900;font-size:2em;line-height:1;color:var(--tc);font-variant-numeric:tabular-nums}
+.team .sub{font-size:.7em;color:var(--muted);font-weight:600}
+.team .adj{display:flex;gap:4px}
+.team .adj button{border:1px solid var(--line);background:var(--soft);border-radius:6px;padding:0 7px;font-size:.72em;line-height:1.5}
+.team.turn{box-shadow:0 0 0 4px var(--gold),0 0 18px var(--gold);animation:turn 1.4s ease-in-out infinite}
+@keyframes turn{50%{box-shadow:0 0 0 4px var(--gold),0 0 30px var(--gold)}}
+.team.bump .sc,.clsb.bump .cl-s{animation:bump .7s ease}
+@keyframes bump{30%{transform:scale(1.45)}}
+.team .star{position:absolute;right:6px;top:-9px;font-size:.78em;background:var(--gold);color:var(--brand);border-radius:8px;padding:0 6px;font-weight:800}
+.clsb{display:flex;align-items:center;gap:14px;background:#fff;color:var(--ink);border-radius:16px;padding:6px 16px;font-weight:800}
+.cl-l{font-size:.8em;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.cl-s{font:900 2.1em/1 var(--display);background:linear-gradient(90deg,#F26B3A,#E0457B,#8B5CF6);-webkit-background-clip:text;background-clip:text;color:transparent;min-width:2ch;display:inline-block}
+.okc{color:var(--ok)}.bdc{color:var(--bad)}
+.clsb .okc,.clsb .bdc,.clsb .run{font-size:1.15em;border-radius:12px;padding:2px 10px}
+.clsb .okc{background:var(--ok-bg)}.clsb .bdc{background:var(--bad-bg)}
+.clsb .run{background:#FFEDD5;color:#C2410C;animation:bump 1s ease}
+
+/* sân khấu */
+.stage{flex:1;background:var(--stage);border-radius:22px;padding:clamp(14px,2vw,30px);border:1px solid var(--line);border-top:8px solid var(--rc);display:flex;flex-direction:column;gap:14px;min-height:0;box-shadow:0 10px 30px #1B2A6B14}
+.rhead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
+.rnum{font-family:var(--display);font-weight:900;color:#fff;background:linear-gradient(120deg,var(--rc),var(--rc2));border-radius:12px;padding:3px 14px;font-size:.95em;box-shadow:0 4px 12px color-mix(in srgb,var(--rc) 40%,transparent)}
+.rhead h1{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.1vw,40px);margin:0;letter-spacing:-.01em;color:var(--rc)}
+.rhead .rule{color:var(--muted);font-size:.9em;flex-basis:100%}
+.qcount{margin-left:auto;font-weight:800;color:var(--rc);font-variant-numeric:tabular-nums}
+.prog{width:clamp(120px,14vw,240px);height:12px;border-radius:8px;background:var(--soft);overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--rc),var(--rc2));border-radius:8px;transition:width .6s}
+.qbox{font-size:clamp(20px,1.65vw,34px);line-height:1.5;font-weight:600;max-width:64ch;margin:0}
+.qbox.sm{font-size:clamp(18px,1.4vw,28px);margin:0 0 8px}
+.qbox.eq{margin:0 0 8px}
+.qq{margin:0 0 8px;font-weight:800;font-size:1.05em;color:var(--rc)}
+.ctx{color:var(--ink2);font-size:.95em;margin:0}
+
+/* phương án */
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.opt{display:flex;gap:14px;align-items:center;width:100%;text-align:left;border:2px solid color-mix(in srgb,var(--oc) 40%,#fff);border-radius:16px;padding:12px 16px;font-size:clamp(17px,1.35vw,28px);
+  background:color-mix(in srgb,var(--oc) 8%,#fff);box-shadow:0 4px 0 color-mix(in srgb,var(--oc) 30%,#fff);min-width:0;transition:transform .15s,box-shadow .15s;position:relative}
+button.opt:not(:disabled):hover{transform:translateY(-3px);box-shadow:0 7px 0 color-mix(in srgb,var(--oc) 40%,#fff)}
+button.opt:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 color-mix(in srgb,var(--oc) 40%,#fff)}
+button.opt:disabled{cursor:default}
+.opt .lt{flex:none;width:2.1em;height:2.1em;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:900;background:var(--oc);box-shadow:0 3px 0 color-mix(in srgb,var(--oc) 60%,#000)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg);box-shadow:0 0 0 5px #16A34A33;animation:glow 1.3s ease 2}
+.opt.right .lt{background:var(--ok)}
+.opt.right::after{content:'✔';position:absolute;right:12px;top:6px;font-size:1.3em;color:var(--ok);font-weight:900}
+@keyframes glow{50%{box-shadow:0 0 0 12px #16A34A22}}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg);opacity:.72;box-shadow:none}
+.opt.wrong .lt{background:var(--bad)}
+.opt.wrong::after{content:'✘';position:absolute;right:12px;top:6px;font-size:1.3em;color:var(--bad);font-weight:900}
+.opt.dim{opacity:.38;box-shadow:none}
+.opt .who{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.opt .ot{min-width:0}
+.chip{border-radius:20px;padding:0 9px;font-size:.6em;font-weight:800;color:#fff;background:var(--tc);white-space:nowrap}
+.why{border-left:6px solid var(--ok);background:var(--ok-bg);border-radius:0 14px 14px 0;padding:10px 16px;font-size:clamp(16px,1.2vw,24px);animation:slidein .5s ease}
+.why b.h{color:var(--ok)}
+.why.ask{border-left-color:var(--gold);background:#FEF9C3}.why.ask b.h{color:#A16207}
+@keyframes slidein{from{opacity:0;transform:translateY(10px)}}
+
+/* thẻ chọn của các đội */
+.picks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pk{border:3px solid var(--tc);border-radius:14px;padding:6px 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:color-mix(in srgb,var(--tc) 6%,#fff)}
+.pk .tn{font-weight:800;color:var(--tc);font-size:.85em;margin-right:auto}
+.pk button{width:2.1em;height:2.1em;border-radius:50%;border:2px solid color-mix(in srgb,var(--oc) 50%,#fff);background:#fff;font-family:var(--display);font-weight:900;font-size:.85em;color:var(--oc)}
+.pk button[aria-pressed="true"]{background:var(--oc);border-color:var(--oc);color:#fff;transform:scale(1.1)}
+.pk.ok{background:var(--ok-bg)}.pk.no{background:var(--bad-bg)}
+
+/* điều khiển */
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px 10px;box-shadow:0 6px 18px #1B2A6B10}
+.btn{border:2px solid var(--line);background:#fff;border-radius:12px;padding:7px 14px;font-weight:800}
+.btn:hover{border-color:var(--brand)}
+.btn.pri{background:linear-gradient(120deg,#1B2A6B,#4B2A8C);border-color:transparent;color:#fff}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--brand)}
+.btn.call{background:linear-gradient(120deg,#F26B3A,#E0457B);border-color:transparent;color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.timer{font-family:var(--display);font-weight:900;font-size:1.6em;font-variant-numeric:tabular-nums;min-width:3.2em;text-align:center;color:var(--brand)}
+.timer.low{color:var(--bad);animation:bump .5s infinite}
+.sp{flex:1}
+.hint{color:var(--muted);font-size:.85em;margin:0}
+
+/* bảng số liệu */
+.dtw{overflow-x:auto}
+.dt{border-collapse:separate;border-spacing:0;font-size:clamp(17px,1.35vw,28px);font-variant-numeric:tabular-nums;border-radius:14px;overflow:hidden;border:2px solid color-mix(in srgb,var(--rc) 35%,#fff)}
+.dt th,.dt td{padding:6px 18px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--line)}
+.dt th{background:color-mix(in srgb,var(--rc) 14%,#fff);font-weight:700;color:var(--ink)}
+.dt tr:nth-child(even) td{background:color-mix(in srgb,var(--rc) 4%,#fff)}
+.v3{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:22px;align-items:start}
+.v3 .opts{grid-template-columns:minmax(0,1fr)}
+.v3.nt{grid-template-columns:minmax(0,1fr)}.v3.nt .opts{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+/* vòng 2: lật thẻ, hai phía hai màu */
+.mem2{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1}
+.side{border-radius:20px;padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
+.side.sL{background:linear-gradient(180deg,#FFE9DC,#FFF6EF)}.side.sR{background:linear-gradient(180deg,#DFEBFF,#F1F7FF)}
+.side h3{margin:0;font:800 1em var(--display)}.side.sL h3{color:var(--cL)}.side.sR h3{color:var(--cR)}
+.side .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;flex:1}
+.card{position:relative;border:0;border-radius:16px;min-height:clamp(84px,9.5vh,150px);padding:0;background:transparent;perspective:900px}
+.card .in{position:absolute;inset:0;transition:transform .5s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
+.card.up .in{transform:rotateY(180deg)}
+.card .f,.card .b{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;display:grid;place-items:center;padding:8px 10px;text-align:center}
+.card .b{color:#fff;font-family:var(--display);font-weight:900;font-size:clamp(26px,2.6vw,48px);text-shadow:0 3px 0 #0003;box-shadow:0 5px 0 #0002}
+.card.sL .b{background:radial-gradient(circle at 20% 20%,#ffffff33 0 10%,transparent 11%) 0 0/28px 28px,linear-gradient(135deg,var(--cL2),var(--cL) 60%,#E0457B)}
+.card.sR .b{background:radial-gradient(circle at 20% 20%,#ffffff33 0 10%,transparent 11%) 0 0/28px 28px,linear-gradient(135deg,var(--cR2),var(--cR) 60%,#5B5BF0)}
+.card:not(.up):hover .b{filter:brightness(1.08);transform:translateY(-2px)}
+.card .f{transform:rotateY(180deg);border:3px solid var(--kc);font-size:clamp(14px,1.18vw,24px);padding-top:18px;line-height:1.35;overflow:hidden}
+.card.sL{--kc:var(--cL)}.card.sR{--kc:var(--cR)}
+.card.sL .f{background:#FFF5EE}.card.sR .f{background:#F0F6FF}
+.card .f .tag{position:absolute;left:8px;top:4px;font:900 .75em var(--display);color:#fff;background:var(--kc);border-radius:8px;padding:0 7px}
+.card.done .f{border-color:var(--ok);box-shadow:inset 0 0 0 3px #16A34A44}
+.card.done .f::before{content:'✔';position:absolute;right:8px;top:2px;color:var(--ok);font-weight:900}
+.card.done .f::after{content:attr(data-team);position:absolute;right:8px;bottom:4px;font-size:.62em;font-weight:800;color:#fff;background:var(--tc);border-radius:10px;padding:0 8px}
+.card.done:not([data-team]) .f::after{display:none}
+.card.miss .f{background:var(--bad-bg);border-color:var(--bad)}
+.card.pulse .in{animation:pulse .8s ease}
+@keyframes pulse{40%{transform:rotateY(180deg) scale(1.08)}}
+.card .f mjx-container>svg{max-width:100%;height:auto}
+.card .f.sm{font-size:clamp(12px,.88vw,18px)}
+
+/* vòng 3: phân nhóm */
+.pnq{color:var(--rc)}
+.pnw{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);gap:16px;flex:1;align-items:stretch}
+.bin{border-radius:22px;padding:12px;min-height:42vh;display:flex;flex-direction:column;gap:8px;border:3px dashed;text-align:left;transition:transform .2s}
+.bin.b0{background:linear-gradient(180deg,#FFE4D6,#FFF6F0);border-color:var(--cL)}
+.bin.b1{background:linear-gradient(180deg,#DCE9FF,#F2F7FF);border-color:var(--cR)}
+.bin:not([aria-disabled]):hover{transform:scale(1.015)}
+.bin .bh{display:block;text-align:center;color:#fff;border-radius:14px;padding:8px 10px;font:800 clamp(17px,1.35vw,26px)/1.3 var(--display)}
+.bin.b0 .bh{background:linear-gradient(120deg,var(--cL2),var(--cL))}.bin.b1 .bh{background:linear-gradient(120deg,var(--cR2),var(--cR))}
+.bin .drop{display:block;text-align:center;font-weight:800;min-height:1.4em;animation:bump 1s infinite}
+.bin.b0 .drop{color:var(--cL)}.bin.b1 .drop{color:var(--cR)}
+.placed{display:flex;gap:6px;align-items:center;justify-content:space-between;background:#fff;border-radius:12px;padding:6px 10px;font-size:clamp(14px,1vw,20px);animation:slidein .5s ease}
+.bin.b0 .placed{border-left:6px solid var(--cL)}.bin.b1 .placed{border-left:6px solid var(--cR)}
+.pile{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.itm{border:2px solid #CBD0E6;background:#fff;border-radius:14px;padding:10px 14px;font-size:clamp(15px,1.15vw,23px);text-align:left;box-shadow:0 4px 0 #CBD0E6;transition:transform .15s}
+.itm:hover{transform:translateY(-2px)}
+.itm.sel{border-color:#8B5CF6;background:#F3EEFF;box-shadow:0 0 0 5px #8B5CF655;transform:scale(1.03)}
+
+/* vòng 5: đồ thị */
+.v4{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+.plotw{border:2px solid color-mix(in srgb,var(--rc) 25%,#fff);border-radius:16px;padding:10px 12px;background:#FBFCFF}
+.plotw>svg{width:100%;height:auto;display:block;max-height:38vh}
+.axl{display:flex;justify-content:space-between;gap:10px;font-size:clamp(14px,1.05vw,20px);color:var(--ink2);margin-top:4px}
+.v4 .opts{grid-template-columns:minmax(0,1fr)}
+.v4 .opt{font-size:clamp(15px,1.12vw,23px);padding:8px 12px}
+.v4 .opts.g{grid-template-columns:repeat(2,minmax(0,1fr))}.v4 .opts.g .opt{flex-wrap:wrap;padding:6px 8px;gap:6px;align-items:flex-start}
+.v4 .opts.g .ot{flex:1 1 70%;min-width:0}.mini{width:100%;height:auto;display:block;max-height:15vh}
+
+/* vòng 6 */
+.steps{display:grid;gap:8px}
+.step{display:flex;gap:12px;align-items:center;border:2px solid var(--line);border-left:8px solid var(--oc,var(--line));border-radius:14px;padding:8px 14px;background:#fff;text-align:left;font-size:clamp(16px,1.25vw,26px);width:100%;transition:transform .15s}
+.step:not(:disabled):hover{transform:translateX(4px)}
+.step .lt{flex:none;width:1.9em;height:1.9em;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--oc,#888) 18%,#fff);color:var(--ink);font-family:var(--display);font-weight:900}
+.step .no{margin-left:auto;flex:none;width:1.9em;height:1.9em;border-radius:50%;display:grid;place-items:center;background:var(--brand);color:#fff;font-family:var(--display);font-weight:900;animation:bump .4s}
+.step .no.gr{background:var(--muted)}
+.step.on{background:#F3EEFF}
+.step.ok{border-color:var(--ok);background:var(--ok-bg)}
+.step.ln{border-left-color:var(--rc)}
+.step.badl{border-color:var(--bad);background:var(--bad-bg)}
+.step.wl{opacity:.5;text-decoration:line-through;text-decoration-color:var(--bad)}
+.buzz{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.buzz button{border:3px solid var(--tc);background:#fff;border-radius:12px;padding:6px 14px;font-weight:800;color:var(--tc)}
+.buzz button[aria-pressed="true"]{background:var(--tc);color:#fff}
+.buzz button.tried{opacity:.45}
+.banner{border-radius:14px;padding:10px 16px;font-weight:800;font-size:clamp(17px,1.3vw,26px);animation:slidein .5s ease}
+.banner.ok{background:var(--ok-bg);color:var(--ok)}.banner.bad{background:var(--bad-bg);color:var(--bad)}
+
+/* trang chủ */
+.home{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(38px,4vw,72px);line-height:1;margin:0 0 12px;color:var(--brand);letter-spacing:-.02em}
+.hero h1 span{background:linear-gradient(90deg,#F26B3A,#E0457B,#8B5CF6,#2F7DE1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:0 0 12px;max-width:62ch;color:var(--ink2)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.modes button{border:3px solid var(--line);background:#fff;border-radius:18px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:2px;color:var(--ink);transition:transform .15s}
+.modes button:hover{transform:translateY(-2px)}
+.modes .me{font-size:1.8em;line-height:1.1}
+.modes button b{font:900 1.2em var(--display)}.modes button span:not(.me){font-size:.8em;color:var(--muted)}
+.modes button[aria-pressed="true"]{border-color:transparent;background:linear-gradient(130deg,#4B2A8C,#E0457B);color:#fff;box-shadow:0 8px 20px #E0457B44}
+.modes button[aria-pressed="true"] span:not(.me){color:#FCE7F3}
+.setup1 label{display:flex;flex-direction:column;gap:4px;font-weight:700;color:var(--ink2);max-width:22em}
+.setup1 input{border:2px solid var(--line);border-radius:12px;padding:6px 10px;font:800 1.2em var(--display);width:7em}
+.setup1 .hint{margin-top:8px;max-width:62ch}
+.rounds{display:grid;gap:8px;align-content:start}
+.rnd{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;border:2px solid color-mix(in srgb,var(--rc) 30%,#fff);border-radius:18px;padding:10px 14px;background:color-mix(in srgb,var(--rc) 6%,#fff);text-align:left;width:100%;transition:transform .15s}
+.rnd:hover{transform:translateX(4px)}
+.rnd b{font-family:var(--display);font-size:1.08em;color:var(--rc)}
+.rnd span{color:var(--muted);font-size:.85em}
+.rnd .n{width:2.3em;height:2.3em;border-radius:12px;background:linear-gradient(130deg,var(--rc),var(--rc2));color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:1.1em}
+.rnd .pts{font-weight:800;color:var(--rc);font-size:.85em;white-space:nowrap}
+.setup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.setup label{display:flex;flex-direction:column;gap:2px;font-size:.8em;font-weight:700;color:var(--tc)}
+.setup input{border:2px solid var(--line);border-left:8px solid var(--tc);border-radius:12px;padding:6px 10px;font:700 1.1em var(--body);color:var(--ink)}
+.cards4{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.9em;color:var(--ink2)}
+.cards4 i{font-style:normal;width:1.8em;height:1.8em;border-radius:8px;display:inline-grid;place-items:center;color:#fff;font-weight:900;background:var(--oc)}
+.confirm{background:var(--bad-bg);border-radius:12px;padding:10px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* tổng kết */
+.kq{display:flex;flex-direction:column;align-items:center;gap:14px}
+.stars{display:flex;gap:18px}
+.stars span{font-size:clamp(60px,7vw,120px);line-height:1;color:#E2E4F0;animation:starin .7s cubic-bezier(.3,1.6,.5,1) both;animation-delay:var(--d)}
+.stars span.on{color:var(--gold);text-shadow:0 6px 0 #CA8A04,0 0 30px #FACC1588}
+@keyframes starin{from{transform:scale(0) rotate(-90deg);opacity:0}}
+.kmsg{font:800 clamp(20px,1.7vw,32px) var(--display);color:var(--rc);margin:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;width:100%}
+.stats div{background:#fff;border:2px solid var(--line);border-radius:18px;padding:10px 14px;display:flex;flex-direction:column;animation:slidein .5s ease both}
+.stats b{font:900 2.3em var(--display);color:var(--brand);line-height:1.1}.stats span{font-size:.82em;color:var(--muted);font-weight:600}
+.stats .t-pts{background:linear-gradient(130deg,#FFF1E6,#FCE7F3);border-color:#F9A8D4}.stats .t-pts b{color:#DB2777}
+.stats .t-ok{background:var(--ok-bg);border-color:#86EFAC}.stats .t-ok b{color:var(--ok)}
+.stats .t-bad{background:var(--bad-bg);border-color:#FDA4AF}.stats .t-bad b{color:var(--bad)}
+.ratio{width:100%;height:18px;border-radius:10px;background:var(--bad-bg);overflow:hidden}
+.ratio i{display:block;height:100%;background:linear-gradient(90deg,#22C55E,#16A34A);border-radius:10px;animation:grow 1.2s ease both}
+@keyframes grow{from{width:0!important}}
+.pod{display:flex;gap:14px;align-items:flex-end;justify-content:center;flex-wrap:wrap;padding-top:10px}
+.pod .col{width:clamp(120px,14vw,220px);text-align:center;animation:slidein .6s ease both;animation-delay:var(--d)}
+.pod .bar{border-radius:16px 16px 0 0;background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 70%,#fff),var(--tc));color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:clamp(26px,2.6vw,48px)}
+.pod .nm{font-weight:800;font-size:1.05em;margin-bottom:6px;color:var(--tc)}
+.pod .rk{font-size:2em}
+.tblw{overflow-x:auto}
+.tbl{border-collapse:separate;border-spacing:0;width:100%;font-size:clamp(15px,1.1vw,22px);border:2px solid var(--line);border-radius:16px;overflow:hidden}
+.tbl th,.tbl td{padding:7px 12px;text-align:center;border-bottom:1px solid var(--line)}
+.tbl th{background:var(--soft)}.tbl td:first-child,.tbl th:first-child{text-align:left}
+.tbl tfoot td{background:#FFF7ED;font-weight:800}
+.tbl .dot{display:inline-grid;place-items:center;width:1.6em;height:1.6em;border-radius:50%;background:var(--rc);color:#fff;font-weight:900;font-size:.85em}
+.stx{color:var(--gold);letter-spacing:2px;text-shadow:0 1px 0 #CA8A04}.stx span{color:#E2E4F0;text-shadow:none}
+.sumh{font:800 1.1em var(--display);margin:6px 0 0;color:var(--bad)}
+.sum{display:flex;flex-direction:column;gap:6px}
+.srow{display:grid;grid-template-columns:9em 1fr auto;gap:12px;align-items:center;text-align:left;background:#fff;border:2px solid var(--line);border-left:8px solid var(--bad);border-radius:12px;padding:8px 12px;color:var(--ink)}
+.srow:hover{border-color:var(--brand)}.sv{font-weight:800;color:var(--brand)}
+.st{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.9em}.sw{font-weight:800;color:var(--bad);font-size:.85em;white-space:nowrap}
+
+/* lớp hiệu ứng */
+#fxc{position:fixed;inset:0;pointer-events:none;z-index:70}
+.flash{position:fixed;inset:0;pointer-events:none;z-index:65;opacity:0}
+.flash.ok.go{animation:fl .8s ease;box-shadow:inset 0 0 0 9px #22C55E88,inset 0 0 60px #22C55E55}
+.flash.bad.go{animation:fl .8s ease;box-shadow:inset 0 0 0 9px #E11D4888,inset 0 0 60px #E11D4855}
+@keyframes fl{20%{opacity:1}}
+.pop{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) scale(.3);opacity:0;pointer-events:none;z-index:68;background:#fff;border-radius:16px;padding:8px 24px 10px;text-align:center;box-shadow:0 12px 35px #0004;border:4px solid;min-width:min(60vw,210px)}
+.pop.ok{border-color:#22C55E}.pop.bad{border-color:#E11D48}
+.pop.go{animation:popin 1.7s cubic-bezier(.3,1.5,.5,1) forwards}
+.pop.big.go{animation-duration:2.3s}
+@keyframes popin{0%{transform:translate(-50%,-50%) scale(.3) rotate(-8deg);opacity:0}14%{transform:translate(-50%,-50%) scale(1.1) rotate(2deg);opacity:1}24%{transform:translate(-50%,-50%) scale(1)}82%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-60%) scale(.9)}}
+.pe{font-size:clamp(28px,3vw,48px);line-height:1.1}
+.pop.ok .pe{animation:wig .6s ease 2}.pop.bad .pe{animation:shk .5s ease 2}
+.pt{font:900 clamp(17px,1.8vw,32px)/1.1 var(--display)}
+.pop.ok .pt{background:linear-gradient(90deg,#16A34A,#0EA5A0,#2F7DE1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pop.bad .pt{color:#E11D48}
+.pop.big .pt{background:linear-gradient(90deg,#F26B3A,#E0457B,#8B5CF6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ps{font-weight:800;font-size:clamp(16px,1.3vw,24px);color:var(--ink2);margin-top:6px}
+@keyframes wig{25%{transform:rotate(-10deg) scale(1.08)}75%{transform:rotate(10deg) scale(1.08)}}
+@keyframes shk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.shake{animation:shake .55s ease}
+@keyframes shake{15%,55%{transform:translateX(-6px)}35%,75%{transform:translateX(6px)}}
+.card.shake .in{animation:none}
+.fpt{position:fixed;z-index:69;transform:translate(-50%,-50%);font:900 clamp(15px,1.5vw,27px) var(--display);color:#16A34A;text-shadow:0 3px 0 #fff,0 0 12px #fff;pointer-events:none;animation:flt 1.4s ease forwards}
+@keyframes flt{to{transform:translate(-50%,-260%);opacity:0}}
+#call{position:fixed;inset:0;z-index:80;background:radial-gradient(circle at 50% 45%,#4B2A8Cee,#1B2A6Bf5);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;cursor:pointer;text-align:center}
+#call[hidden]{display:none}
+#call .cl{font:800 clamp(26px,3vw,52px) var(--display);opacity:.9}
+#call .cn{font:900 clamp(140px,24vh,320px)/1 var(--display);background:linear-gradient(90deg,#FFB13B,#F26B3A,#E0457B);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+#call.done .cn{animation:bump .6s ease}
+#call .cs{font-weight:700;opacity:.75}
+@media (max-width:900px){.home,.v4,.v3,.pnw,.mem2{grid-template-columns:minmax(0,1fr)}.board4{grid-template-columns:repeat(2,minmax(0,1fr));min-width:0}#board{margin-left:0;width:100%}.opts,.picks,.v3.nt .opts{grid-template-columns:minmax(0,1fr)}.bin{min-height:20vh}.modes{grid-template-columns:1fr}.srow{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.pop.go{opacity:1;transform:translate(-50%,-50%)}}
+.nw{white-space:nowrap}
+.card .f>span:last-child{max-width:100%}
+.ctx.big{font-size:clamp(18px,1.45vw,30px);line-height:1.45;color:var(--ink);font-weight:600}
+.qcard{background:linear-gradient(120deg,color-mix(in srgb,var(--rc) 12%,#fff),color-mix(in srgb,var(--rc2) 10%,#fff));border:2px solid color-mix(in srgb,var(--rc) 35%,#fff);border-left:8px solid var(--rc);border-radius:16px;padding:10px 16px;margin-bottom:10px}
+.qcard .qbox.eq{font-size:clamp(24px,2.1vw,42px);margin:4px 0 0;color:var(--brand)}
+.qcard .ctx.big mjx-container,.ctx.big mjx-container{font-size:108%}
+.v3 + .ctx.big,.ctx.big+.v3{margin-top:4px}
+.pop .ps .pf{margin-top:8px;font-size:1.15em;color:var(--ink)}
+.pop{max-width:min(92vw,900px)}
+.rost{max-width:none!important;width:100%}
+.rost textarea{border:2px solid var(--line);border-radius:12px;padding:8px 10px;font:500 .95em/1.45 var(--body);width:100%;resize:vertical;color:var(--ink)}
+.rost textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.rrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.rrow .sz{flex-direction:row!important;align-items:center;gap:6px;font-size:.85em}
+.rrow .sz input{width:5em;font-size:1em}
+#call.nm .cn{font-size:clamp(56px,9vw,150px);line-height:1.1;max-width:92vw;text-align:center;padding:0 2vw}
+#call .cm{font:800 clamp(22px,2.4vw,40px) var(--display);color:#FDE68A;min-height:1.2em;margin-bottom:6px}
+.sys{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0}
+.sysp{flex:1 1 260px;min-width:0;background:#F7FAFF;border:2px solid #DCE3EE;border-radius:14px;padding:6px 10px;display:flex;flex-direction:column;gap:2px}
+.sysp b{font:800 1em var(--display);color:var(--rc)}
+.sysv{width:100%;height:auto;display:block;max-height:20vh}
+.qcard .sysv{max-height:16vh}
+.opt .ot .sysv{max-height:11vh}
+.pnd{display:flex;flex-direction:column;gap:2px;width:100%}.pnd .sysv{max-height:8vh;max-width:100%}.pnd>span{font-size:.9em}
+.placed .pnd .sysv{max-height:6vh}
+.v4 .opts.g1{grid-template-columns:minmax(0,1fr)}.v4 .opts.g1 .opt{padding:6px 10px}.v4 .opts.g1 .ot .sysv{max-height:12vh}
+.sysv.par{max-height:26vh}.qcard .sysv.par{max-height:20vh}
+.pile.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:center}
+.pnd .sysv{max-height:10vh}.pnd .sysv.par{max-height:12vh}
+.opt .ot{flex:1 1 auto}.v4 .opts.g1 .ot .sysv{max-height:13vh;width:100%}
+/* ===== chương 5: khung ảnh / video / hoạt hình, phòng chiếu ===== */
+.v5{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start;flex:1}
+.v5 .opts{grid-template-columns:minmax(0,1fr)}
+.v5 .opt{font-size:clamp(16px,1.2vw,25px);padding:9px 14px}
+.mf{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.mf figcaption{font-size:clamp(13px,.95vw,18px);color:var(--ink2);line-height:1.4}
+.mf figcaption .src{color:var(--muted);font-size:.9em}
+.kbw{position:relative;overflow:hidden;border-radius:16px;background:#0F172A;display:flex;align-items:center;justify-content:center;height:min(56vh,560px);border:2px solid color-mix(in srgb,var(--rc) 35%,#fff)}
+.kbw::before{content:'';position:absolute;inset:-20px;background:var(--bg) center/cover;filter:blur(18px) brightness(.55);transform:scale(1.1)}
+.kbi{position:relative;max-width:100%;max-height:100%;height:100%;animation:kb var(--d) ease-in-out infinite alternate;transform-origin:50% 50%}
+.kbi img{width:100%;height:100%;display:block;object-fit:contain;max-width:none}
+@keyframes kb{from{transform:translate(var(--x0),var(--y0)) scale(var(--s0))}to{transform:translate(var(--x1),var(--y1)) scale(var(--s1))}}
+.pm{position:absolute;transform:translate(-50%,-50%);width:2em;height:2em;border-radius:50%;background:#FACC15;border:3px solid #14325C;display:grid;place-items:center;font:900 clamp(16px,1.3vw,24px) var(--display);color:#14325C;box-shadow:0 0 0 6px #FACC1566;animation:bump 1.2s infinite}
+.vidf video{height:min(56vh,560px);width:100%;object-fit:contain;background:#0F172A;border-radius:16px;border:2px solid color-mix(in srgb,var(--rc) 35%,#fff)}
+.animf svg.anim{width:100%;height:auto;max-height:56vh;background:linear-gradient(180deg,#F8FBFF,#EEF4FB);border-radius:16px;border:2px solid color-mix(in srgb,var(--rc) 35%,#fff);display:block}
+.qq.big2{font-size:clamp(19px,1.5vw,30px)}
+.show{display:grid;grid-template-columns:minmax(180px,.28fr) minmax(0,1fr);gap:16px;flex:1;min-height:0}
+.dlist{display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:66vh}
+.dlist button{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:6px 10px;font-weight:700;font-size:.92em}
+.dlist button b{flex:none;width:1.8em;height:1.8em;border-radius:8px;display:grid;place-items:center;background:var(--soft);color:var(--brand);font-family:var(--display)}
+.dlist button[aria-current]{border-color:var(--rc);background:color-mix(in srgb,var(--rc) 10%,#fff);color:var(--rc)}
+.dlist button[aria-current] b{background:var(--rc);color:#fff}
+.screen{display:flex;flex-direction:column;gap:10px;min-width:0}
+.scene{animation:slidein .6s ease}
+.scene .kbw,.scene .vidf video{height:min(60vh,640px)}
+.scene .animf svg.anim{max-height:60vh}
+.segs{display:flex;gap:4px}
+.seg{height:10px;border:0;border-radius:6px;background:var(--soft);padding:0;overflow:hidden;position:relative}
+.seg i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--rc),var(--rc2))}
+.seg.done i{width:100%!important}
+.scard{background:linear-gradient(135deg,#F0FDFA,#EFF6FF);border:2px solid #99F6E4;border-radius:20px;padding:14px 22px;min-height:min(60vh,640px)}
+.scard h3{margin:0 0 8px;font:900 clamp(24px,2vw,38px) var(--display);color:var(--rc)}
+.scard dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;margin:0;font-size:clamp(17px,1.3vw,26px);line-height:1.4}
+.scard dt{font-weight:800;color:var(--brand)}.scard dt.up{color:var(--ok)}.scard dt.dn{color:var(--bad)}
+.scard dd{margin:0}
+.srct img{width:96px;height:64px;object-fit:cover;border-radius:8px;display:block}
+.srct td{text-align:left!important;font-size:.85em;vertical-align:middle}
+.srct a{color:var(--brand);word-break:break-word}
+@media (max-width:900px){.v5,.show{grid-template-columns:minmax(0,1fr)}.dlist{flex-direction:row;flex-wrap:wrap;max-height:none}.scard dl{grid-template-columns:1fr}}
+/* ===== v2: sinh động hơn ===== */
+.vidf .vc{position:relative;height:min(56vh,560px);overflow:hidden;border-radius:16px;background:#0F172A;display:flex;justify-content:center;border:2px solid color-mix(in srgb,var(--rc) 35%,#fff)}
+.vidf .vc video{height:100%;width:auto;max-width:none;flex:none;border:0;border-radius:0;object-fit:cover;background:none}
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tri .vc{height:min(56vh,560px)}
+.tri .vc video{width:100%;object-fit:cover;object-position:50% 0}
+.tri .vc span{position:absolute;left:8px;right:8px;top:8px;text-align:center;background:#0F172Acc;color:#fff;border-radius:10px;padding:4px 6px;font:800 clamp(14px,1.1vw,22px) var(--display)}
+.scene .vidf .vc,.scene .kbw{height:min(60vh,640px)}
+.sw{position:relative}
+.rib{position:absolute;left:14px;right:14px;bottom:18px;display:flex;justify-content:center;pointer-events:none}
+.rib span{background:linear-gradient(110deg,#0E7490ee,#7C3AEDee);color:#fff;font:800 clamp(18px,1.6vw,32px)/1.3 var(--display);padding:10px 22px;border-radius:14px;box-shadow:0 10px 30px #0006;animation:ribin .7s cubic-bezier(.2,1.4,.4,1) .35s backwards;text-align:center;max-width:94%}
+.sw.an .rib span{animation:ribin .7s cubic-bezier(.2,1.4,.4,1) .35s backwards,ribout .6s ease 4.6s forwards}
+@keyframes ribout{to{opacity:0;transform:translateY(20px)}}
+@keyframes ribin{from{opacity:0;transform:translateY(40px) scale(.9)}}
+.mf figcaption{margin-top:2px}
+.scene{animation:scin .55s cubic-bezier(.2,1,.3,1)}
+@keyframes scin{from{opacity:0;transform:scale(1.04) translateX(30px);filter:blur(4px)}}
+.scene{position:relative}
+.intro{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:24px;background:radial-gradient(circle,#0E7490f2,#1B2A6Bf8);border-radius:16px;color:#fff;animation:introOut 2s ease forwards;pointer-events:none;z-index:3}
+.intro b{font:900 clamp(70px,9vw,170px)/1 var(--display);background:linear-gradient(135deg,#FACC15,#F97316);-webkit-background-clip:text;background-clip:text;color:transparent;animation:pop5 .7s cubic-bezier(.2,1.6,.4,1)}
+.intro span{font:900 clamp(34px,4vw,76px)/1.1 var(--display);display:flex;flex-direction:column;animation:ribin .7s cubic-bezier(.2,1.4,.4,1) .15s backwards}
+.intro small{font:700 .4em var(--body);opacity:.8;margin-top:8px}
+@keyframes introOut{0%,70%{opacity:1}100%{opacity:0;visibility:hidden}}
+@keyframes pop5{from{transform:scale(0) rotate(-20deg)}}
+.anim .lb{animation:lbin .55s cubic-bezier(.2,1.6,.4,1) backwards;transform-box:fill-box;transform-origin:center}
+@keyframes lbin{from{opacity:0;transform:scale(.5)}}
+.scard{animation:scin .6s ease}
+.scard dl>*{animation:ribin .5s ease backwards}
+.scard dl>:nth-child(n+3){animation-delay:.25s}.scard dl>:nth-child(n+5){animation-delay:.5s}.scard dl>:nth-child(n+7){animation-delay:.8s}.scard dl>:nth-child(n+9){animation-delay:1.1s}.scard dl>:nth-child(n+11){animation-delay:1.4s}
+.scard.cred ul{margin:0;padding-left:1.2em;display:grid;gap:10px;font-size:clamp(17px,1.25vw,26px)}
+.scard.cred p{color:var(--muted)}
+/* ===== chế độ xuất video (?rec=k) ===== */
+html.rec,html.rec body{background:#fff}
+html.rec body::after{content:'';position:fixed;right:0;bottom:0;width:3px;height:3px;background:#fff;animation:tk .2s steps(2) infinite;z-index:99}@keyframes tk{50%{background:#fdfdfd}}
+html.rec body{padding:0}
+html.rec .top,html.rec .ctrl,html.rec .dlist,html.rec .segs{display:none}
+html.rec .app{max-width:none;padding:0;gap:0;height:100vh}
+html.rec .stage{border-radius:0;border:0;border-top:14px solid #0E7490;padding:22px 40px 30px;gap:16px;height:100vh;box-shadow:none}
+html.rec .show{grid-template-columns:1fr;flex:1}
+html.rec,html.rec *{font-family:Cambria,Caladea,'Times New Roman',serif!important}
+html.rec .rhead h1{font-size:60px;color:#0E7490}
+html.rec .rnum{font-size:30px;padding:6px 18px}
+html.rec .qcount{font-size:32px;color:#0E7490}
+html.rec .scene .kbw,html.rec .scene .vidf .vc{height:850px;border:0}
+html.rec .scene .animf svg.anim{max-height:850px;height:850px;border:0}
+html.rec .rib span{font-size:44px;font-weight:700;padding:14px 30px}
+html.rec .tri .vc span{font-size:36px}
+html.rec .scard{min-height:850px;padding:30px 50px}
+html.rec .scard h3{font-size:58px}
+html.rec .scard dl{font-size:40px;gap:18px 30px}
+html.rec .scard.cred ul{font-size:30px}
+html.rec .scard.cred p{font-size:28px}
+html.rec .intro span{font-size:96px}html.rec .intro b{font-size:220px}
+.intro{position:absolute;inset:auto auto 16px 16px;left:16px;top:16px;bottom:auto;display:flex;align-items:center;gap:14px;background:#1B2A6Bee;border-radius:16px;padding:10px 22px 10px 16px;color:#fff;animation:ribin .6s cubic-bezier(.2,1.4,.4,1);pointer-events:none;z-index:3;box-shadow:0 10px 30px #0005}
+.intro b{font:900 clamp(40px,4vw,80px)/1 var(--display);background:linear-gradient(135deg,#FACC15,#F97316);-webkit-background-clip:text;background-clip:text;color:transparent}
+.intro span{font:900 clamp(22px,2vw,40px)/1.1 var(--display);display:flex;flex-direction:column}
+html.rec .intro span{font-size:60px}html.rec .intro b{font-size:110px}
+.qfin{border-radius:18px;padding:12px 20px;margin-bottom:10px;background:linear-gradient(120deg,#FEF3C7,#FFE4E6);border:3px solid #F59E0B;box-shadow:0 8px 24px #F59E0B33;animation:slidein .5s ease}
+.qfin.error{background:linear-gradient(120deg,#FFE4E6,#EDE9FE);border-color:#E11D48;box-shadow:0 8px 24px #E11D4833}
+.qfin .qk{display:inline-block;font:900 clamp(14px,1vw,20px) var(--display);text-transform:uppercase;letter-spacing:.06em;color:#fff;background:#D97706;border-radius:10px;padding:2px 12px}
+.qfin.error .qk{background:#E11D48}
+.qfin p{margin:6px 0 0;font:900 clamp(24px,2.2vw,44px)/1.25 var(--display);color:#1A1F3A}
+.v6{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:start}
+.v6 .m6 .kbw,.v6 .m6 .vc{height:min(46vh,480px)}.v6 .m6 svg.anim{max-height:46vh}
+.v1m{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}
+.v1m .opts.one{grid-template-columns:minmax(0,1fr)}
+.v1m .m1 .kbw,.v1m .m1 .vc{height:min(44vh,460px)}.v1m .m1 svg.anim{max-height:44vh}
+.why.meo{border-left-color:#8B5CF6;background:#F3EEFF}.why.meo b.h{color:#7C3AED}
+.thb{display:block;height:clamp(40px,6.5vh,76px);width:100%;object-fit:cover;border-radius:8px;margin:0 0 4px;flex:none}
+.tha svg.anim{height:100%;width:100%;background:#F4F8FC;border-radius:8px}
+.card .f.hasth{display:flex;flex-direction:column;justify-content:center;padding-top:20px}
+.pbig{display:block;max-height:28vh;max-width:min(80vw,620px);margin:10px auto 0;border-radius:14px;object-fit:contain}
+.pbig.tha{height:28vh;width:min(70vw,520px)}
+.bm{display:block;margin:0 auto}.bm .pbig{max-height:16vh;margin:2px auto 4px;width:auto;max-width:100%}.bm .pbig.tha{height:16vh;width:100%}
+@media (max-width:900px){.v6,.v1m{grid-template-columns:minmax(0,1fr)}}
+/* ---- làm bài ở nhà ---- */
+.login{max-width:560px;margin:4vh auto;background:#fff;border-radius:22px;padding:26px 28px;box-shadow:0 10px 40px rgba(30,20,80,.15);border-top:8px solid #4B2A8C}
+.login h1{font:800 clamp(26px,3vw,38px) var(--display);margin:0 0 4px;color:#4B2A8C}
+.login p{margin:4px 0 14px;color:var(--muted)}
+.login label{display:block;font-weight:700;margin:12px 0 4px}
+.login input{width:100%;box-sizing:border-box;font:inherit;font-size:1.1em;padding:10px 12px;border:2px solid #D6D3E8;border-radius:12px}
+.login input:focus{outline:none;border-color:#4B2A8C}
+.login .err{color:#B91C1C;font-weight:700;min-height:1.3em;margin:8px 0 0}
+.login button{margin-top:14px;width:100%;font-size:1.15em}
+.svcard{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;background:#F5F3FF;border:2px solid #DDD6FE;border-radius:16px;padding:12px 16px;margin:12px 0}
+.svcard b{font-size:1.15em;color:#4B2A8C}.svcard .sp{flex:1}
+.svcard + .hint{max-width:62ch}
+.gsbox{width:100%;box-sizing:border-box;border-radius:14px;padding:12px 16px;font-weight:600;border:2px solid #D6D3E8;background:#FAFAFF}
+.gsbox.ok{border-color:#86EFAC;background:#F0FDF4;color:#166534}.gsbox.wait{border-color:#FDE68A;background:#FFFBEB;color:#92400E}.gsbox.bad{border-color:#FCA5A5;background:#FEF2F2;color:#991B1B}
+.gsbox code{font-size:1.2em;letter-spacing:.08em;background:#fff;padding:2px 8px;border-radius:8px;border:1px solid currentColor}
+.gsbox .btn{margin-left:8px}
+</style>
+<div class="app">
+  <header class="top">
+    <div class="logo">Đấu trường Thiết bị<small>KTPU · Chương 5</small></div>
+    <nav class="tabs" id="tabs" aria-label="Các vòng"></nav>
+    <div id="board" aria-live="polite"></div>
+  </header>
+  <main class="stage" id="stage"></main>
+  <div class="ctrl" id="ctrl"></div>
+</div>
+<canvas id="fxc" aria-hidden="true"></canvas>
+<div id="flash" class="flash" aria-hidden="true"></div>
+<div id="pop" class="pop" role="status" aria-live="assertive"></div>
+<div id="call" hidden role="dialog" aria-label="Gọi sinh viên"><div class="cl">🎲 Mời sinh viên số</div><div class="cn">?</div><div class="cm"></div><div class="cs">Đang quay…</div></div>
+<script>
+/* ================= HOẠT HÌNH MẶT CẮT THIẾT BỊ (SVG + SMIL) ================= */
+let AID=0;
+function srand(seed){let s=seed>>>0||1;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+const f1=v=>(+v).toFixed(1);
+const LQ='#4FA3E0',LQ2='#2E6FB8',HT='#F07B2A',CAT='#9A6A3A',GAS='#FFFFFF',INK='#14325C';
+function defs5(id){return `<defs>
+ <marker id="a${id}" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="${INK}"/></marker>
+ <marker id="h${id}" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="14" markerHeight="14" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="${HT}"/></marker>
+ <linearGradient id="m${id}" x1="0" x2="1"><stop offset="0" stop-color="#C9D3E2"/><stop offset=".5" stop-color="#F4F7FB"/><stop offset="1" stop-color="#9AA7BC"/></linearGradient>
+ <linearGradient id="c${id}" x1="0" x2="1"><stop offset="0" stop-color="#3B8FE0"/><stop offset="1" stop-color="#8E44AD"/></linearGradient>
+ <linearGradient id="v${id}" x1="0" x2="0" y1="1" y2="0"><stop offset="0" stop-color="#3B8FE0"/><stop offset="1" stop-color="#8E44AD"/></linearGradient>
+ <radialGradient id="b${id}"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#D6ECFF" stop-opacity=".55"/></radialGradient></defs>`;}
+const arr=(id,x1,y1,x2,y2,c)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c==='h'?HT:INK}" stroke-width="3" marker-end="url(#${c==='h'?'h':'a'}${id})"/>`;
+/* chấm chạy theo đường path */
+const mover=(path,dur,begin,r,fill,extra='')=>`<circle r="${r}" fill="${fill}" ${extra}><animateMotion dur="${dur}s" begin="${begin}s" repeatCount="indefinite" path="${path}"/></circle>`;
+/* cánh khuấy quay (nhìn ngang): co giãn theo phương ngang */
+const impeller=(x,y,w,dur=.9)=>`<g transform="translate(${x},${y})"><g><rect x="${-w}" y="-5" width="${2*w}" height="10" rx="3" fill="${INK}"/><rect x="-4" y="-12" width="8" height="24" rx="2" fill="${INK}"/>
+ <animateTransform attributeName="transform" type="scale" values="1 1;0.12 1;-1 1;0.12 1;1 1" dur="${dur}s" repeatCount="indefinite"/></g></g>`;
+/* nhãn: chế độ 'lab' hiện chữ, chế độ 'mark' hiện số tròn ở điểm chỉ định */
+function labels(L,opt){if(!L)return '';const show=opt.labels!==false;let s='';
+  L.forEach((l,i)=>{if(opt.mark){if(opt.mark===l.k){s+=`<g class="mk"><circle cx="${l.x}" cy="${l.y}" r="15" fill="#FACC15" stroke="${INK}" stroke-width="3"><animate attributeName="r" values="13;17;13" dur="1.2s" repeatCount="indefinite"/></circle><text x="${l.x}" y="${l.y+6}" font-size="17" font-weight="900" text-anchor="middle" fill="${INK}">?</text></g>`;}return;}
+    if(!show)return;const tx=l.tx??l.x,ty=l.ty??l.y,a=l.a||(tx<l.x?'end':'start');
+    s+=`<g class="lb" style="animation-delay:${(0.4+i*0.3).toFixed(2)}s"><line x1="${l.x}" y1="${l.y}" x2="${tx}" y2="${ty}" stroke="${INK}" stroke-width="1.6"/><circle cx="${l.x}" cy="${l.y}" r="3.5" fill="${INK}"/>
+     <text x="${tx+(a==='end'?-5:a==='start'?5:0)}" y="${ty+5}" font-size="15" font-weight="700" text-anchor="${a}" fill="${INK}" paint-order="stroke" stroke="#fff" stroke-width="4">${l.t}</text></g>`;});
+  return s;}
+
+/* ---- bình khuấy: kind = batch | cont | bio | heat ---- */
+function aTank(id,o){const kind=o.kind||'cont',R=srand(7);let s='';
+  const x0=120,x1=280,yT=70,yB=258;
+  /* vỏ áo */
+  s+=`<path d="M${x0-14},${yT+20} V${yB-22} Q${x0-14},${yB+14} 200,${yB+14} Q${x1+14},${yB+14} ${x1+14},${yB-22} V${yT+20}" fill="#FCD9BF" stroke="${HT}" stroke-width="3"/>`;
+  s+=`<path d="M${x0-7},${yT+24} V${yB-22} Q${x0-7},${yB+7} 200,${yB+7} Q${x1+7},${yB+7} ${x1+7},${yB-22} V${yT+24}" fill="none" stroke="${HT}" stroke-width="5" stroke-dasharray="10 12" opacity=".75"><animate attributeName="stroke-dashoffset" from="0" to="-44" dur="1.4s" repeatCount="indefinite"/></path>`;
+  s+=arr(id,x1+60,yB-6,x1+16,yB-6,'h')+arr(id,x0-16,yT+28,x0-60,yT+28,'h');
+  /* thân bình */
+  s+=`<path d="M${x0},${yT} V${yB-24} Q${x0},${yB} 200,${yB} Q${x1},${yB} ${x1},${yB-24} V${yT}" fill="#fff" stroke="${INK}" stroke-width="3"/>`;
+  const liq=`M${x0+3},${yT+28} V${yB-24} Q${x0+3},${yB-3} 200,${yB-3} Q${x1-3},${yB-3} ${x1-3},${yB-24} V${yT+28} Z`;
+  if(kind==='batch')s+=`<path d="${liq}" fill="${LQ}"><animate attributeName="fill" values="#3B8FE0;#6C5CD6;#8E44AD;#8E44AD;#3B8FE0" keyTimes="0;.45;.8;.97;1" dur="12s" repeatCount="indefinite"/></path>`;
+  else s+=`<path d="${liq}" fill="${kind==='bio'?'#7FBF6A':'#7E64D0'}"/>`;
+  s+=`<rect x="${x0-6}" y="${yT-10}" width="${x1-x0+12}" height="12" rx="3" fill="url(#m${id})" stroke="${INK}" stroke-width="2"/>`;
+  /* ống xoắn trong */
+  if(kind!=='bio')for(let y=yT+60;y<=yB-50;y+=22){s+=`<circle cx="${x0+16}" cy="${y}" r="6" fill="${HT}" stroke="#9A3412" stroke-width="1.5"/><circle cx="${x1-16}" cy="${y}" r="6" fill="${HT}" stroke="#9A3412" stroke-width="1.5"/>`;}
+  /* dòng tuần hoàn do cánh khuấy */
+  const yi=yB-58;
+  for(let k=0;k<16;k++){const left=k%2,cx=left?160:240,p=left?`M200,${yi} C${x0+10},${yi+10} ${x0+10},${yT+50} 170,${yT+50} C200,${yT+50} 205,${yi-30} 200,${yi}`:`M200,${yi} C${x1-10},${yi+10} ${x1-10},${yT+50} 230,${yT+50} C200,${yT+50} 195,${yi-30} 200,${yi}`;
+    s+=mover(p,3.2,-(k*0.4),3.2,kind==='bio'?'#2F6B1F':'#fff','opacity=".85"');}
+  if(kind==='bio'){for(let k=0;k<14;k++){const x=175+R()*50;s+=`<circle cx="${f1(x)}" cy="${yB-20}" r="${f1(2.5+R()*3)}" fill="url(#b${id})" stroke="#fff"><animate attributeName="cy" from="${yB-20}" to="${yT+30}" dur="${f1(2.4+R())}s" begin="-${f1(R()*3)}s" repeatCount="indefinite"/><animate attributeName="cx" values="${f1(x)};${f1(x+(R()-.5)*60)};${f1(x+(R()-.5)*80)}" dur="${f1(2.4+R())}s" begin="-${f1(R()*3)}s" repeatCount="indefinite"/></circle>`;}
+    s+=`<path d="M175,${yB-18} H225" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M175,${yB-18} V${yB+30} H130" fill="none" stroke="${INK}" stroke-width="3"/>`+arr(id,90,yB+30,128,yB+30);}
+  /* trục, động cơ, cánh khuấy */
+  s+=`<rect x="186" y="${yT-44}" width="28" height="26" rx="4" fill="#5B6B86" stroke="${INK}" stroke-width="2"/><line x1="200" y1="${yT-18}" x2="200" y2="${yi}" stroke="${INK}" stroke-width="5"/>`;
+  s+=impeller(200,yi,40)+impeller(200,yT+70,30,1.1);
+  /* dòng vào / ra */
+  if(kind==='cont'||kind==='heat'){s+=`<path d="M60,${yT-28} H150 V${yT+40}" fill="none" stroke="#3B8FE0" stroke-width="7"/><path d="M60,${yT-28} H150 V${yT+40}" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 10"><animate attributeName="stroke-dashoffset" from="0" to="-32" dur=".8s" repeatCount="indefinite"/></path>`;
+    s+=`<path d="M200,${yB} V${yB+26} H340" fill="none" stroke="#7E64D0" stroke-width="7"/><path d="M200,${yB} V${yB+26} H340" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 10"><animate attributeName="stroke-dashoffset" from="0" to="-32" dur=".8s" repeatCount="indefinite"/></path>`+arr(id,330,yB+26,356,yB+26);}
+  if(kind==='batch')s+=`<g font-size="15" font-weight="800" fill="${INK}"><text x="200" y="${yB+46}" text-anchor="middle">Nạp liệu lúc đầu · tháo sản phẩm lúc cuối</text></g>`;
+  const L=[{k:'motor',x:200,y:yT-31,tx:250,ty:yT-40,t:'Động cơ'},{k:'imp',x:232,y:yi,tx:330,ty:yi-20,t:'Cánh khuấy'},{k:'shaft',x:200,y:yT+20,tx:250,ty:yT+8,t:'Trục khuấy'},
+   {k:'jacket',x:x0-10,y:yB-60,tx:40,ty:yB-80,t:'Vỏ áo'}];
+  if(kind!=='bio')L.push({k:'coil',x:x1-16,y:yT+82,tx:345,ty:yT+60,t:'Ống xoắn'});
+  if(kind==='cont'||kind==='heat'){L.push({k:'in',x:90,y:yT-28,tx:60,ty:yT-46,t:'Tác chất vào',a:'start'},{k:'out',x:300,y:yB+26,tx:300,ty:yB+46,t:'Sản phẩm ra',a:'middle'});}
+  if(kind==='bio')L.push({k:'sparger',x:200,y:yB-18,tx:60,ty:yB+10,t:'Ống sục khí'});
+  L.push({k:'htin',x:x1+40,y:yB-6,tx:x1+40,ty:yB+18,t:'Tác nhân nhiệt',a:'middle'});
+  return {s,L,vb:'0 0 400 310'};}
+
+/* ---- bình khuấy nối tiếp ---- */
+function aSeries(id){let s='';const C=['#4C7FE0','#6A62D6','#8350C8'];
+  s+=`<path d="M10,70 H40 V95" fill="none" stroke="#3B8FE0" stroke-width="6"/>`;
+  [0,1,2].forEach(i=>{const x=40+i*120;s+=`<path d="M${x},80 V190 Q${x},215 ${x+40},215 Q${x+80},215 ${x+80},190 V80" fill="#fff" stroke="${INK}" stroke-width="3"/>
+   <path d="M${x+3},105 V190 Q${x+3},212 ${x+40},212 Q${x+77},212 ${x+77},190 V105Z" fill="${C[i]}"/><line x1="${x+40}" y1="55" x2="${x+40}" y2="180" stroke="${INK}" stroke-width="4"/><rect x="${x+30}" y="42" width="20" height="16" rx="3" fill="#5B6B86"/>`+impeller(x+40,180,24,.8);
+   for(let k=0;k<6;k++)s+=mover(`M${x+40},180 C${x+8},185 ${x+8},120 ${x+30},118 C${x+40},118 ${x+44},160 ${x+40},180`,2.4,-k*.4,2.6,'#fff');
+   s+=`<text x="${x+40}" y="245" font-size="16" font-weight="800" text-anchor="middle" fill="${INK}">Bình ${i+1}</text>`;
+   if(i<2)s+=`<path d="M${x+40},215 V228 H${x+105} V100 H${x+120}" fill="none" stroke="${C[i]}" stroke-width="6"/>`+mover(`M${x+40},215 V228 H${x+105} V100 H${x+120}`,2,0,3,'#fff')+mover(`M${x+40},215 V228 H${x+105} V100 H${x+120}`,2,-1,3,'#fff');});
+  s+=`<path d="M320,215 V228 H390" fill="none" stroke="${C[2]}" stroke-width="6"/>`+arr(id,375,228,398,228);
+  s+=`<text x="200" y="292" font-size="15" font-weight="700" text-anchor="middle" fill="${INK}">Nồng độ tác chất giảm theo từng bậc: C<tspan baseline-shift="sub" font-size="70%">A1</tspan> &gt; C<tspan baseline-shift="sub" font-size="70%">A2</tspan> &gt; C<tspan baseline-shift="sub" font-size="70%">A3</tspan></text>`;
+  return {s,L:[{k:'in',x:20,y:70,tx:14,ty:50,t:'Tác chất vào',a:'start'},{k:'link',x:145,y:228,tx:200,ty:264,t:'Dòng ra bình 1 = dòng vào bình 2',a:'middle'}],vb:'0 0 400 305'};}
+
+/* ---- bình ống: mode = ideal | real | zigzag ---- */
+function aPipe(id,o){const mode=o.mode||'ideal',R=srand(3);let s='';
+  if(mode==='zigzag'){const p='M20,60 H330 Q370,60 370,100 Q370,140 330,140 H70 Q30,140 30,180 Q30,220 70,220 H380';
+    s+=`<path d="${p}" fill="none" stroke="${INK}" stroke-width="30" stroke-linecap="round"/><path d="${p}" fill="none" stroke="url(#c${id})" stroke-width="22"/>`;
+    for(let k=0;k<22;k++)s+=mover(p,7,-k*7/22,4,'#fff');
+    s+=arr(id,4,60,24,60)+arr(id,378,220,398,220);
+    return {s,L:[{k:'in',x:24,y:60,tx:24,ty:30,t:'Tác chất vào',a:'start'},{k:'bend',x:370,y:100,tx:300,ty:30,t:'Ghép ống zic zắc (co nối)',a:'middle'},{k:'out',x:370,y:220,tx:330,ty:260,t:'Sản phẩm ra',a:'middle'}],vb:'0 0 400 290'};}
+  const xa=40,xb=360,yo1=95,yo2=205,yi1=122,yi2=178;
+  s+=`<rect x="${xa}" y="${yo1}" width="${xb-xa}" height="${yo2-yo1}" rx="8" fill="#FDE3CF" stroke="${INK}" stroke-width="3"/>`;
+  for(let k=0;k<18;k++){const yy=k%2?yo1+12:yo2-12;s+=`<circle r="3.5" fill="${HT}" cy="${yy}"><animate attributeName="cx" from="${xb-10}" to="${xa+10}" dur="5s" begin="-${f1(k*5/18)}s" repeatCount="indefinite"/></circle>`;}
+  s+=`<rect x="${xa-20}" y="${yi1}" width="${xb-xa+40}" height="${yi2-yi1}" fill="url(#c${id})" stroke="${INK}" stroke-width="3"/>`;
+  if(mode==='ideal'){for(let k=0;k<9;k++)s+=`<line y1="${yi1+3}" y2="${yi2-3}" stroke="#fff" stroke-width="4" opacity=".9"><animate attributeName="x1" from="${xa-15}" to="${xb+15}" dur="6s" begin="-${f1(k*6/9)}s" repeatCount="indefinite"/><animate attributeName="x2" from="${xa-15}" to="${xb+15}" dur="6s" begin="-${f1(k*6/9)}s" repeatCount="indefinite"/></line>`;}
+  else{const rows=7;for(let r=0;r<rows;r++){const yy=yi1+6+r*(yi2-yi1-12)/(rows-1),u=1-((yy-(yi1+yi2)/2)/((yi2-yi1)/2))**2,d=Math.max(2.2,6/(0.25+u));
+      for(let k=0;k<5;k++)s+=`<circle r="3" fill="#fff" cy="${f1(yy)}"><animate attributeName="cx" from="${xa-15}" to="${xb+15}" dur="${f1(d)}s" begin="-${f1(k*d/5)}s" repeatCount="indefinite"/></circle>`;}
+    s+=`<path d="M${xa+60},${yi1+3} q40,27 0,53" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="5 4"/><path d="M${xa+220},${yi1+3} q40,27 0,53" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="5 4"/>`;}
+  s+=arr(id,4,150,xa-22,150)+arr(id,xb+22,150,396,150)+arr(id,xb+30,yo2+25,xb-6,yo2+25,'h')+arr(id,xa+6,yo1-22,xa-30,yo1-22,'h');
+  s+=`<path d="M${xb-20},${yo2} V${yo2+25} H${xb+30}" fill="none" stroke="${HT}" stroke-width="4"/><path d="M${xa+20},${yo1} V${yo1-22} H${xa-30}" fill="none" stroke="${HT}" stroke-width="4"/>`;
+  const L=[{k:'in',x:12,y:150,tx:8,ty:72,t:'Tác chất vào',a:'start'},{k:'out',x:388,y:150,tx:392,ty:72,t:'Sản phẩm ra',a:'end'},{k:'inner',x:200,y:yi1+8,tx:200,ty:40,t:mode==='ideal'?'Ống phản ứng: dòng đẩy tịnh tiến':'Dòng chảy tầng: tâm nhanh, sát thành chậm',a:'middle'},{k:'outer',x:260,y:yo2-8,tx:260,ty:262,t:'Ống ngoài: tác nhân trao đổi nhiệt',a:'middle'}];
+  return {s,L,vb:'0 0 400 290'};}
+
+/* ---- tầng cố định ---- */
+function aFixed(id){const R=srand(11);let s='';const x0=140,x1=260,yT=40,yB=270,b1=95,b2=225;
+  s+=`<rect x="${x0-14}" y="${yT+15}" width="${x1-x0+28}" height="${yB-yT-30}" rx="10" fill="#FDE3CF" stroke="${HT}" stroke-width="3"/>`;
+  s+=`<path d="M${x0},${yT+10} Q200,${yT-20} ${x1},${yT+10} V${yB-10} Q200,${yB+20} ${x0},${yB-10} Z" fill="#EEF4FB" stroke="${INK}" stroke-width="3"/>`;
+  for(let y=b1+6;y<b2;y+=11)for(let x=x0+7+((y/11|0)%2)*5;x<x1-4;x+=11)s+=`<circle cx="${f1(x+(R()-.5)*2)}" cy="${f1(y+(R()-.5)*2)}" r="5.2" fill="${CAT}" stroke="#5E3B1C" stroke-width="1"/>`;
+  s+=`<line x1="${x0}" y1="${b2+5}" x2="${x1}" y2="${b2+5}" stroke="${INK}" stroke-width="4" stroke-dasharray="6 3"/>`;
+  for(let k=0;k<16;k++){const x=x0+12+R()*(x1-x0-24);s+=mover(`M${f1(x)},${yB-12} C${f1(x+18)},${b2} ${f1(x-18)},${(b1+b2)/2} ${f1(x+6)},${b1} L${f1(x)},${yT+10}`,4,-k*.25,2.6,'#fff','stroke="#2E6FB8" stroke-width="1"');}
+  s+=`<path d="M200,${yB+30} V${yB+4}" stroke="${INK}" stroke-width="6" marker-end="url(#a${id})"/><path d="M200,${yT-4} V${yT-34}" stroke="${INK}" stroke-width="6" marker-end="url(#a${id})"/>`;
+  s+=arr(id,x1+60,b2,x1+16,b2,'h')+arr(id,x0-16,b1,x0-60,b1,'h');
+  const L=[{k:'bed',x:x1-20,y:(b1+b2)/2,tx:330,ty:(b1+b2)/2-30,t:'Lớp xúc tác rắn cố định'},{k:'grid',x:x0+20,y:b2+5,tx:60,ty:b2+30,t:'Lưới đỡ'},{k:'gin',x:200,y:yB+20,tx:240,ty:yB+24,t:'Khí vào (đáy)'},{k:'gout',x:200,y:yT-20,tx:240,ty:yT-22,t:'Khí ra (đỉnh)'},{k:'jacket',x:x0-10,y:150,tx:60,ty:150,t:'Trao đổi nhiệt'}];
+  return {s,L,vb:'0 0 400 310'};}
+
+/* ---- tầng sôi ---- */
+function aFluid(id){const R=srand(5);let s='';
+  s+=`<path d="M160,272 V150 L118,112 V30 H282 V112 L240,150 V272 Z" fill="#EEF4FB" stroke="${INK}" stroke-width="3"/>`;
+  s+=`<path d="M164,262 V160 L160,150 L240,150 L236,160 V262 Z" fill="#E7D6C3" opacity=".55"/>`;
+  /* hạt rắn chuyển động hỗn loạn */
+  for(let k=0;k<70;k++){const x=168+R()*64,y=162+R()*96,v=[0,1,2,3].map(()=>`${f1((R()-.5)*14)} ${f1((R()-.5)*16)}`).join(';');
+    s+=`<circle cx="${f1(x)}" cy="${f1(y)}" r="4.2" fill="${CAT}" stroke="#5E3B1C" stroke-width=".8"><animateTransform attributeName="transform" type="translate" values="0 0;${v};0 0" dur="${f1(1.2+R()*1.2)}s" repeatCount="indefinite"/></circle>`;}
+  /* bọt khí */
+  for(let k=0;k<9;k++){const x=172+R()*56,d=f1(1.8+R()*1.2);s+=`<ellipse cx="${f1(x)}" rx="6" ry="4" fill="url(#b${id})" stroke="#fff"><animate attributeName="cy" from="258" to="152" dur="${d}s" begin="-${f1(R()*3)}s" repeatCount="indefinite"/><animate attributeName="rx" values="4;10" dur="${d}s" begin="-${f1(R()*3)}s" repeatCount="indefinite"/></ellipse>`;}
+  /* lưới phân phối */
+  s+=`<line x1="160" y1="264" x2="240" y2="264" stroke="${INK}" stroke-width="5" stroke-dasharray="7 4"/>`;
+  for(let k=0;k<5;k++)s+=`<path d="M${170+k*15},296 V272" stroke="#7FA7D9" stroke-width="3" marker-end="url(#a${id})"><animate attributeName="opacity" values=".3;1;.3" dur="1s" begin="${k*.2}s" repeatCount="indefinite"/></path>`;
+  /* cyclon */
+  s+=`<path d="M225,48 H265 V70 L250,95 V140" fill="#fff" stroke="${INK}" stroke-width="2.5"/><path d="M215,60 H225" stroke="${INK}" stroke-width="2.5"/>`;
+  for(let k=0;k<3;k++)s+=mover('M150,140 C150,90 200,60 222,60 L245,62 L250,90 L250,140',2.6,-k*.9,3,CAT);
+  s+=`<path d="M245,48 V14" stroke="${INK}" stroke-width="5" marker-end="url(#a${id})"/>`;
+  const L=[{k:'bed',x:205,y:200,tx:330,ty:200,t:'Lớp hạt giả lỏng'},{k:'grid',x:180,y:264,tx:60,ty:262,t:'Lưới phân phối khí'},{k:'gin',x:200,y:290,tx:250,ty:296,t:'Khí vào'},
+    {k:'cyc',x:258,y:75,tx:330,ty:90,t:'Cyclon thu hồi hạt'},{k:'top',x:130,y:80,tx:60,ty:70,t:'Phần trên mở rộng'},{k:'gout',x:245,y:22,tx:290,ty:16,t:'Khí ra'},{k:'bub',x:190,y:210,tx:60,ty:200,t:'Bọt khí'}];
+  return {s,L,vb:'0 0 400 310'};}
+
+/* ---- tháp đệm ---- */
+function aPacked(id){const R=srand(9);let s='';const x0=150,x1=250,yT=40,yB=270,p1=85,p2=220;
+  s+=`<rect x="${x0}" y="${yT}" width="${x1-x0}" height="${yB-yT}" rx="12" fill="#F4F8FC" stroke="${INK}" stroke-width="3"/>`;
+  for(let y=p1+6;y<p2;y+=13)for(let x=x0+9+((y/13|0)%2)*6;x<x1-6;x+=13)s+=`<circle cx="${f1(x+(R()-.5)*3)}" cy="${f1(y+(R()-.5)*3)}" r="5" fill="none" stroke="#A0805E" stroke-width="3"/>`;
+  s+=`<line x1="${x0}" y1="${p2+4}" x2="${x1}" y2="${p2+4}" stroke="${INK}" stroke-width="4" stroke-dasharray="5 3"/><path d="M${x0+15},${p1-14} H${x1-15}" stroke="${INK}" stroke-width="4"/>`;
+  for(let k=0;k<14;k++){const x=x0+14+R()*(x1-x0-28);s+=mover(`M${f1(x)},${p1-12} C${f1(x+14)},${p1+40} ${f1(x-14)},${p1+90} ${f1(x+8)},${p2} L${f1(x)},${yB-12}`,3.6,-k*.26,3.2,'#2E86DE');}
+  for(let k=0;k<12;k++){const x=x0+14+R()*(x1-x0-28);s+=mover(`M${f1(x)},${yB-14} C${f1(x-16)},${p2-30} ${f1(x+16)},${p1+30} ${f1(x)},${p1-16} L${f1(x)},${yT+6}`,3,-k*.25,2.6,'#B6BFCC','stroke="#6B7280" stroke-width=".8"');}
+  s+=arr(id,60,p1-14,x0-4,p1-14)+`<path d="M60,${p1-14} H${x0+15}" stroke="#2E86DE" stroke-width="4"/>`+arr(id,60,yB-30,x0-4,yB-30)+arr(id,200,yT-2,200,yT-30)+arr(id,x1+4,yB-10,x1+60,yB-10);
+  const L=[{k:'pack',x:x1-14,y:150,tx:330,ty:150,t:'Vật liệu đệm'},{k:'dist',x:x1-20,y:p1-14,tx:330,ty:p1-30,t:'Bộ phân phối lỏng'},{k:'lin',x:80,y:p1-14,tx:40,ty:p1-34,t:'Lỏng vào',a:'start'},
+    {k:'gin',x:80,y:yB-30,tx:40,ty:yB-50,t:'Khí vào',a:'start'},{k:'gout',x:200,y:yT-20,tx:240,ty:yT-24,t:'Khí ra'},{k:'lout',x:x1+40,y:yB-10,tx:x1+40,ty:yB+14,t:'Lỏng ra',a:'middle'},{k:'grid',x:x1-20,y:p2+4,tx:330,ty:p2+22,t:'Lưới đỡ đệm'}];
+  return {s,L,vb:'0 0 400 300'};}
+
+/* ---- tháp mâm (chóp) ---- */
+function aTray(id){const R=srand(4);let s='';const x0=140,x1=260,yT=30,yB=282,trays=[78,126,174,222],W=12;
+  s+=`<rect x="${x0}" y="${yT}" width="${x1-x0}" height="${yB-yT}" rx="12" fill="#F4F8FC" stroke="${INK}" stroke-width="3"/>`;
+  s+=`<path d="M${x0+2},${yB-22} H${x1-2} V${yB-10} Q200,${yB} ${x0+2},${yB-10}Z" fill="${LQ}" opacity=".7"/>`;
+  let P=`M${x0-40},62 H${x0+8} V${trays[0]-6}`;
+  trays.forEach((y,i)=>{const R2=i%2===0,dx=R2?x1-22:x0+22,yn=i<3?trays[i+1]:yB-14;
+    /* lớp lỏng trên mâm (cao bằng gờ) */
+    s+=`<rect x="${R2?x0+2:x0+24}" y="${y-W}" width="${x1-x0-26}" height="${W}" fill="${LQ}" opacity=".85"><animate attributeName="opacity" values=".7;.95;.7" dur="1.6s" repeatCount="indefinite"/></rect>`;
+    /* chất lỏng trong ống chảy chuyền */
+    s+=`<rect x="${R2?dx+1:x0+2}" y="${y-2}" width="${R2?x1-dx-3:dx-x0-3}" height="${yn-y-6}" fill="${LQ}" opacity=".45"/>`;
+    /* mâm + gờ chảy tràn + vách ống chảy chuyền */
+    s+=`<line x1="${R2?x0:x0+22}" y1="${y}" x2="${R2?x1-22:x1}" y2="${y}" stroke="${INK}" stroke-width="4"/>`;
+    s+=`<line x1="${dx}" y1="${y-W-2}" x2="${dx}" y2="${Math.min(y+34,yB-18)}" stroke="${INK}" stroke-width="3"/><rect x="${dx-2.5}" y="${y-W-3}" width="5" height="${W+3}" fill="#B45309"/>`;
+    for(let c=0;c<3;c++){const cx=(R2?x0+22:x0+48)+c*26;s+=`<path d="M${cx-9},${y-3} V${y-9} Q${cx},${y-18} ${cx+9},${y-9} V${y-3}" fill="#5B6B86" stroke="${INK}" stroke-width="1.5"/>`;
+      for(let b=0;b<3;b++)s+=`<circle cx="${cx-8+b*8}" r="2.4" fill="#fff"><animate attributeName="cy" from="${y-5}" to="${y-W-6}" dur="${f1(.6+R()*.5)}s" begin="-${f1(R())}s" repeatCount="indefinite"/></circle>`;
+      s+=`<circle cx="${cx}" r="2" fill="#9AA7BC"><animate attributeName="cy" from="${y-W-6}" to="${y-48}" dur="${f1(1.4+R())}s" begin="-${f1(R()*2)}s" repeatCount="indefinite"/></circle>`;}
+    /* đường đi của lỏng: ngang qua mâm → tràn qua gờ → rơi xuống ống chảy chuyền → mâm dưới */
+    if(R2)P+=` L${x1-32},${y-6} Q${dx},${y-W-12} ${dx+8},${y-6} V${yn-6}`;
+    else P+=` L${x0+32},${y-6} Q${dx},${y-W-12} ${dx-8},${y-6} V${yn-6}`;
+    if(i<3)P+=R2?` L${x1-12},${yn-6}`:` L${x0+12},${yn-6}`;});
+  P+=` H${x1-6} H${x1+44}`;
+  s+=`<path d="${P}" fill="none" stroke="#1D5FA8" stroke-width="1.2" stroke-dasharray="3 5" opacity=".55"/>`;
+  for(let k=0;k<30;k++)s+=mover(P,13,-k*13/30,3.2,'#1D5FA8','stroke="#fff" stroke-width="1"');
+  s+=arr(id,60,62,x0-4,62)+`<path d="M60,62 H${x0}" stroke="#2E86DE" stroke-width="4"/>`+arr(id,60,yB-36,x0-4,yB-36)+arr(id,200,yT-2,200,yT-26)+arr(id,x1+4,yB-14,x1+60,yB-14);
+  const L=[{k:'weir',x:x1-22,y:trays[0]-W-2,tx:330,ty:trays[0]-34,t:'Gờ chảy tràn'},{k:'cap',x:x0+74,y:trays[1]-14,tx:330,ty:trays[1]-12,t:'Chóp trên mâm'},{k:'tray',x:x1-60,y:trays[2],tx:330,ty:trays[2]+4,t:'Mâm'},
+    {k:'down',x:x0+11,y:trays[1]+24,tx:60,ty:trays[1]+30,t:'Ống chảy chuyền'},{k:'liq',x:x0+10,y:trays[0]-6,tx:60,ty:trays[0]+4,t:'Lớp lỏng trên mâm'},
+    {k:'lin',x:80,y:62,tx:40,ty:44,t:'Lỏng vào',a:'start'},{k:'gin',x:80,y:yB-36,tx:40,ty:yB-54,t:'Khí vào',a:'start'},{k:'gout',x:200,y:yT-16,tx:240,ty:yT-18,t:'Khí ra'},{k:'lout',x:x1+40,y:yB-14,tx:x1+40,ty:yB+6,t:'Lỏng ra',a:'middle'}];
+  return {s,L,vb:'0 0 400 305'};}
+
+/* ---- tháp sủi bọt ---- */
+function aBubble(id){const R=srand(13);let s='';const x0=150,x1=250,yT=40,yB=275;
+  s+=`<rect x="${x0}" y="${yT}" width="${x1-x0}" height="${yB-yT}" rx="14" fill="#F4F8FC" stroke="${INK}" stroke-width="3"/>`;
+  s+=`<rect x="${x0+3}" y="${yT+30}" width="${x1-x0-6}" height="${yB-yT-33}" rx="10" fill="#6FB27A"/>`;
+  s+=`<path d="M${x0+20},${yB-18} H${x1-20}" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>`;
+  for(let k=0;k<26;k++){const x=x0+22+R()*(x1-x0-44),d=f1(2.6+R()*1.6),b=f1(R()*4);s+=`<circle cx="${f1(x)}" r="${f1(3+R()*4)}" fill="url(#b${id})" stroke="#fff"><animate attributeName="cy" from="${yB-22}" to="${yT+34}" dur="${d}s" begin="-${b}s" repeatCount="indefinite"/><animate attributeName="cx" values="${f1(x)};${f1(x+(R()-.5)*26)};${f1(x+(R()-.5)*26)}" dur="${d}s" begin="-${b}s" repeatCount="indefinite"/></circle>`;}
+  s+=`<path d="M60,${yB+18} H200 V${yB-18}" fill="none" stroke="${INK}" stroke-width="3"/>`+arr(id,60,yB+18,100,yB+18)+arr(id,200,yT-2,200,yT-30)+arr(id,60,yT+50,x0-4,yT+50)+arr(id,x1+4,yB-40,x1+60,yB-40);
+  const L=[{k:'spar',x:x1-30,y:yB-18,tx:330,ty:yB-4,t:'Ống sục khí'},{k:'bub',x:200,y:150,tx:330,ty:140,t:'Bọt khí đi lên'},{k:'liq',x:x0+12,y:200,tx:60,ty:200,t:'Pha lỏng liên tục'},
+    {k:'gin',x:80,y:yB+18,tx:40,ty:yB+2,t:'Khí vào',a:'start'},{k:'gout',x:200,y:yT-18,tx:240,ty:yT-22,t:'Khí ra'},{k:'lin',x:80,y:yT+50,tx:40,ty:yT+32,t:'Lỏng vào',a:'start'},{k:'lout',x:x1+40,y:yB-40,tx:x1+40,ty:yB-62,t:'Lỏng ra',a:'middle'}];
+  return {s,L,vb:'0 0 400 300'};}
+
+const ANIM={batch:id=>aTank(id,{kind:'batch'}),cstr:id=>aTank(id,{kind:'cont'}),bio:id=>aTank(id,{kind:'bio'}),series:aSeries,pfr:id=>aPipe(id,{mode:'ideal'}),pfrReal:id=>aPipe(id,{mode:'real'}),zigzag:id=>aPipe(id,{mode:'zigzag'}),fixed:aFixed,fluid:aFluid,packed:aPacked,tray:aTray,bubble:aBubble};
+const SPEED=0.6; /* < 1: hoạt hình nhanh hơn */
+function animSVG(name,opt={}){const id='z'+(++AID),g=ANIM[name](id),k=opt.speed||SPEED;
+  const [,,w,h]=g.vb.split(' ').map(Number);
+  const body=(g.s).replace(/(dur|begin)="(-?[\d.]+)s"/g,(m,a,v)=>`${a}="${(+v*k).toFixed(2)}s"`);
+  const vb=opt.tight?`30 0 ${w-60} ${h}`:`-110 0 ${w+220} ${h}`;
+  return `<svg class="anim" viewBox="${vb}" role="img" aria-label="Hoạt hình mặt cắt thiết bị">${defs5(id)}${body}${labels(g.L,opt)}</svg>`;}
+function animLabel(name,k){const g=ANIM[name]('tmp');const l=g.L.find(x=>x.k===k);return l?l.t:'';}
+
+/* ================= NGÂN HÀNG CÂU HỎI – CHƯƠNG 5: THIẾT BỊ PHẢN ỨNG (slide Chương 5 P1, P2; đề cương 5.1–5.2.4) ================= */
+const R = String.raw;
+
+/* ---------- Ảnh thật (Wikimedia Commons) và video (4TU.ResearchData) ---------- */
+const IMG={ /* tên: [rộng, cao, mô tả tiếng Việt, tác giả, giấy phép, tên tệp gốc] */
+ 'cstr-inside':[1500,1125,'Bên trong một thiết bị phản ứng khuấy trộn bằng thép AISI 316 khi kiểm tra định kỳ; phía trên là cánh khuấy','Yuri Raysper','Public domain','Chemical reactor CSTR AISI 316.JPG'],
+ 'cuve':[797,1298,'Sơ đồ bình khuấy: động cơ, hộp giảm tốc, trục và hai tầng cánh khuấy; mũi tên là hướng dòng do cánh khuấy tạo ra','Cognart','Public domain','Cuveagitée.JPG'],
+ 'halfcoil':[953,715,'Mô hình 3D bình phản ứng có vỏ áo dạng nửa ống quấn quanh thân','Echis','CC BY 2.5','Final half coil vessel.JPG'],
+ 'jacket':[1500,996,'Hai bình phản ứng trung hòa có vỏ áo nửa ống đang lắp đặt (nhà máy thử nghiệm Blue Grass, Mỹ)','PEO, Assembled Chemical Weapons Alternatives','CC BY 2.0','Jacketed vessels.jpg'],
+ 'tubular':[1500,994,'Hệ thiết bị quang sinh học dạng ống: các ống trong suốt ghép song song và nối tiếp, môi trường nuôi vi tảo chảy liên tục trong ống','AlgaEnergy','CC BY-SA 4.0','Tubular Photobioreactors.jpg'],
+ 'nh3-karlsruhe':[882,1500,'Thiết bị phản ứng cao áp tổng hợp NH₃ của BASF, nay trưng bày tại Đại học Karlsruhe (Đức)','Dietmar Rabich','CC BY-SA 4.0','Karlsruhe, Hochdruckreaktor zur Ammoniak-Synthese -- 2013 -- 5283.jpg'],
+ 'nh3-1913':[1000,1500,'Lắp đặt thiết bị phản ứng cao áp của dây chuyền NH₃ đầu tiên, Oppau 1913','BASF Corporate History','CC BY-SA 3.0','Ammoniak-Reaktor 1913 Oppau.jpg'],
+ 'catcon':[720,678,'Bộ chuyển đổi xúc tác lắp dưới gầm ô tô (khí thải đi qua lớp xúc tác)','Ahanix1989 (en.wikipedia)','Public domain','DodgeCatCon.jpg'],
+ 'catcon-cut':[640,297,'Bộ chuyển đổi xúc tác ô tô được cắt dọc: bên trong là khối xúc tác kim loại dạng tổ ong nằm cố định','Stahlkocher (de.wikipedia)','CC BY-SA 2.0','Aufgeschnittener Metall Katalysator für ein Auto.jpg'],
+ 'fb-diagram':[843,1024,'Sơ đồ thiết bị tầng sôi khí – rắn (chú thích tiếng Thổ Nhĩ Kỳ: Gaz = khí, Katı = rắn, Dağıtıcı = bộ phân phối)','Hughesy127','CC0','Akışkan Yataklı Reaktör.jpg'],
+ 'refinery':[640,324,'Nhà máy lọc dầu Humber (Anh), nơi có phân xưởng cracking xúc tác tầng sôi','Jonathan Billinger','CC BY-SA 2.0','Humber Refinery - geograph.org.uk - 600591.jpg'],
+ 'rfcc':[1029,954,'Sơ đồ cracking xúc tác tầng sôi cặn dầu (RFCC): xúc tác tuần hoàn giữa thiết bị phản ứng và thiết bị tái sinh','FrankvEck','CC BY-SA 4.0','Rfcc-en2.jpg'],
+ 'raschig':[1300,1053,'Vòng Raschig bằng gốm 1 inch – vật liệu đệm','Chemical Engineer','Public domain','RaschigRings005.JPG'],
+ 'pall':[1500,1125,'Vòng Pall và vòng Białecki bằng nhựa – vật liệu đệm có nhiều lỗ thông','LukaszKatlewa','CC BY-SA 3.0','Pall rings (2) and Bialecki rings (6).jpg'],
+ 'trays':[453,500,'Hình vẽ năm 1906: mâm chóp (trái) và mâm xuyên lỗ (phải), nhìn ngang và nhìn từ trên xuống','Jacob Grossmann','Public domain','Distillation column trays.JPG'],
+ 'columns':[1138,1500,'Cụm tháp chưng cất hai nồi (Ý) – tháp mâm cao, nhiều tầng','Luigi Chiesa','CC BY 3.0','Colonne distillazione.jpg'],
+ 'bubble':[1125,1500,'Thiết bị quang sinh học dạng cột sủi bọt nuôi vi tảo (đèn chiếu sáng quanh thân, khí sục từ đáy)','IndustrialPlankton','CC BY-SA 4.0','High Surface Area Bubble Column Photobioreactor.jpg'],
+ 'bioreactor':[1500,1125,'Thiết bị lên men (bioreactor) phòng thí nghiệm: bình thủy tinh có cánh khuấy, ống sục khí, đầu dò','Luis Fernando Flores LAB','CC BY-SA 4.0','Bioreactor 1.jpg'],
+ 'btec':[1000,750,'Dãy thiết bị lên men bằng thép không gỉ tại cơ sở đào tạo BTEC (Mỹ)','Rick Lawless, BTEC','CC BY 3.0','BTEC Bioreactors.jpg'],
+ 'penicillin':[600,450,'Thiết bị lên men sản xuất penicillin năm 1957 (Bảo tàng Khoa học London)','Matt Brown','CC BY 2.0','Penicillin bioreactor.jpg'],
+ 'rfcc6':[652,980,'Sơ đồ RFCC (trên) và minh họa của tác giả về sự cố Torrance 2015, Superior 2018 (dưới): hiđrocacbon và không khí trộn lẫn qua đường xúc tác, gây nổ','FrankvEck','CC BY-SA 4.0','Rfcc-en6.jpg'],
+ 'enzyme':[314,294,'Giản đồ năng lượng: phản ứng có enzym (xanh) và không có enzym (đỏ)','G. Andruk','CC BY-SA 3.0','Enzyme activation energy.png']};
+const VID={ /* tên: [mô tả, chi tiết] */
+ 'fl-min':['Hạt thủy tinh 0,8 mm trong cột PVC 5,7 cm, nước bơm từ dưới lên: trạng thái bắt đầu sôi (tối thiểu)','Video 09'],
+ 'fl-norm':['Hạt thủy tinh 1,5 mm (màu xanh), nước bơm từ dưới lên: tầng sôi bình thường, lớp hạt giãn nở và chuyển động','Video 13'],
+ 'fl-high':['Hạt canxit 1,4 – 1,7 mm, lưu lượng rất lớn: tầng sôi rất mạnh, không đồng nhất','Video 06'],
+ 'fl-min2':['Hạt thủy tinh 1,5 mm, lưu lượng vừa vượt điểm sôi tối thiểu: lớp hạt bắt đầu giãn nở','Video 12'],
+ 'fl-bub':['Hạt thủy tinh 3,5 mm, tầng sôi bình thường: xuất hiện các khoảng ít hạt đi lên như bọt','Video 19'],
+ 'fl-void':['Hạt thủy tinh 2,5 mm, tầng sôi có các khoảng trống (open voids)','Video 17']};
+const VIDSRC=R`Kramer, O. (2019). Videos of liquid-solid fluidisation experiments of calcite pellets and glass beads in water. 4TU.ResearchData, DOI 10.4121/uuid:1b685d9e-4441-4a53-865c-86622ba49b25. Giấy phép CC0.`;
+
+/* khung hiển thị: ảnh (Ken Burns + điểm đánh dấu), video, hoạt hình */
+let MID=0;
+function media(m,opt={}){if(!m)return '';MID++;
+  if(m.vids)return `<figure class="mf vidf"><div class="tri">${m.vids.map((v,i)=>`<div class="vc"><video src="vid/${v}.mp4" autoplay muted loop playsinline aria-label="${esc(VID[v][0])}"></video><span>${m.cap[i]}</span></div>`).join('')}</div>${opt.cap===false?'':`<figcaption>🎥 <span class="src">O. Kramer, 4TU.ResearchData, CC0</span></figcaption>`}</figure>`;
+  if(m.vid)return `<figure class="mf vidf"><div class="vc one"><video src="vid/${m.vid}.mp4" autoplay muted loop playsinline aria-label="Video thí nghiệm"></video></div>${opt.cap===false?'':`<figcaption>🎥 ${opt.cap==='credit'?'':VID[m.vid][0]+' '}<span class="src">· O. Kramer, 4TU.ResearchData, CC0</span></figcaption>`}</figure>`;
+  if(m.anim)return `<figure class="mf animf">${animSVG(m.anim,{mark:opt.mark||m.mark,labels:opt.labels??m.labels})}${opt.cap===false||!m.cap?'':`<figcaption>${m.cap}</figcaption>`}</figure>`;
+  const I=IMG[m.img],kb=m.kb||[0,0,1,0,0,1.12];
+  const marks=(opt.marks??m.marks??[]).map(k=>`<span class="pm" style="left:${k[0]}%;top:${k[1]}%">${k[2]??'?'}</span>`).join('');
+  return `<figure class="mf imgf"><div class="kbw" style="--bg:url('img/${m.img}.jpg')"><div class="kbi" style="aspect-ratio:${I[0]}/${I[1]};--x0:${kb[0]}%;--y0:${kb[1]}%;--s0:${kb[2]};--x1:${kb[3]}%;--y1:${kb[4]}%;--s1:${kb[5]};--d:${m.d||8}s">
+   <img src="img/${m.img}.jpg" alt="${esc(I[2])}">${marks}</div></div>${opt.cap===false?'':`<figcaption>📷 ${opt.cap==='credit'?'':(m.cap||I[2])+' '}<span class="src">· ${esc(I[3])}, ${I[4]}</span></figcaption>`}</figure>`;}
+
+/* ---------- Danh mục thiết bị (Phòng chiếu) ---------- */
+const DEV=[
+ {id:'bkgd',name:'Bình khuấy gián đoạn',sub:'Batch reactor · 5.1.1',scenes:[{img:'cuve',t:'Động cơ – trục – cánh khuấy: khuấy trộn để hỗn hợp đồng nhất'},{img:'penicillin',t:'Thiết bị lên men penicillin (1957): nạp – phản ứng – tháo theo từng mẻ'},{anim:'batch',t:'Không có dòng vào – ra: nồng độ thay đổi theo thời gian'}],
+  card:{loai:'Pha lỏng; lỏng – rắn',cau:'Bình + cánh khuấy, vỏ áo hoặc ống xoắn trao đổi nhiệt',ng:R`Nạp tác chất lúc đầu → phản ứng đến \(X_\mathrm{A}\) yêu cầu → tháo sản phẩm. Tính chất đồng nhất theo vị trí, thay đổi theo thời gian.`,
+   uu:'Đạt độ chuyển hóa cao (chủ động thời gian phản ứng); linh động (một thiết bị, nhiều sản phẩm); đầu tư thấp; dễ vệ sinh',
+   nhuoc:'Năng suất thấp (thời gian nạp, đốt nóng, làm nguội, tháo, vệ sinh); chi phí vận hành cao; tự động hóa thấp; chất lượng không ổn định giữa các mẻ',
+   dung:'Năng suất nhỏ, dược phẩm, lên men, sản phẩm đắt tiền, thử nghiệm quy trình mới'}},
+ {id:'cstr',name:'Bình khuấy liên tục (CSTR)',sub:'Continuous stirred tank reactor · 5.1.1',scenes:[{img:'cstr-inside',t:'Bên trong bình: cánh khuấy lớn gắn trên trục'},{img:'jacket',t:'Vỏ áo nửa ống quanh thân để trao đổi nhiệt'},{anim:'cstr',t:'Vào – ra liên tục; nồng độ như nhau ở mọi điểm'}],
+  card:{loai:'Pha lỏng; khí – lỏng; khí – lỏng trên xúc tác huyền phù',cau:'Bình + cánh khuấy; vỏ áo, ống xoắn trong, TB trao đổi nhiệt ngoài hoặc ngưng tụ hồi lưu; hệ điều khiển',ng:'Tác chất cấp liên tục, trộn ngay với hỗn hợp trong bình; sản phẩm tháo liên tục. Ở đầu vào nồng độ giảm đột ngột bằng nồng độ dòng ra; trạng thái ổn định.',
+   uu:'Năng suất cao; chất lượng ổn định; kiểm soát nhiệt độ tốt; thích hợp phản ứng 2 pha; tự động hóa cao; chi phí vận hành thấp',
+   nhuoc:'Độ chuyển hóa thấp, muốn cao cần V rất lớn; đầu tư cao (thiết bị điều khiển); kém linh động',dung:'Sản xuất năng suất lớn, chất lượng ổn định'}},
+ {id:'tdn',name:'Trao đổi nhiệt cho bình khuấy',sub:'Vỏ áo · ống xoắn · ngoài bình',scenes:[{img:'halfcoil',t:'Vỏ áo dạng nửa ống quấn quanh thân bình'},{img:'jacket',t:'Tác nhân nóng hoặc lạnh chảy trong vỏ áo'},{anim:'cstr',t:'Vỏ áo bên ngoài, ống xoắn bên trong bình'}],
+  card:{loai:'Bộ phận đi kèm bình khuấy',cau:'(a) vỏ áo; (b) ống xoắn trong; (c) ống thẳng trong; (d) TB trao đổi nhiệt ngoài; (e) ngưng tụ hồi lưu; (f) đun bằng khói lò',ng:'Tác nhân truyền nhiệt được dẫn vào và ra liên tục để cấp hoặc lấy nhiệt phản ứng.',
+   uu:'Vỏ áo: không chiếm thể tích trong bình, dễ vệ sinh. Ống xoắn trong: bề mặt trao đổi nhiệt lớn',nhuoc:'Vỏ áo: bề mặt giới hạn bởi thành bình. Ống xoắn: khó vệ sinh, cản dòng khuấy',dung:'Phản ứng tỏa hoặc thu nhiệt mạnh cần giữ nhiệt độ'}},
+ {id:'bknt',name:'Bình khuấy mắc nối tiếp',sub:'Multistage · mô hình dãy hộp',scenes:[{anim:'series',d:14,t:'Dòng ra bình trước là dòng vào bình sau'}],
+  card:{loai:'Như bình khuấy liên tục',cau:'Nhiều bình khuấy (hoặc nhiều ngăn trong một vỏ) nối tiếp',ng:'Dòng ra bình trước là dòng vào bình sau; nồng độ tác chất giảm theo bậc.',
+   uu:'Cùng tổng thể tích, độ chuyển hóa cao hơn một bình lớn; thu được các dòng sản phẩm nồng độ khác nhau',nhuoc:'Nhiều thiết bị, nhiều điều khiển',dung:R`Khi cần \(X_\mathrm{A}\) cao mà vẫn giữ ưu điểm khuấy trộn`}},
+ {id:'bo',name:'Bình ống (thiết bị đẩy)',sub:'Plug flow reactor · 5.1.2',scenes:[{img:'tubular',t:'Ống dài ghép nối tiếp: chất lỏng chảy dọc ống'},{anim:'pfr',t:'Dòng đẩy: nồng độ giảm dần theo chiều dài ống'},{anim:'pfrReal',d:7,t:'Ống thực: tâm chảy nhanh, sát thành chảy chậm'},{anim:'zigzag',d:6,t:'Ghép ống zic zắc để tiết kiệm không gian'}],
+  card:{loai:'Pha khí, lỏng; khí hoặc lỏng trên xúc tác rắn; khí – lỏng',cau:'Một ống trụ lớn hay nhiều ống ghép; ống lồng ống trao đổi nhiệt; ghép zic zắc tiết kiệm không gian',ng:'Tác chất vào một đầu, phản ứng khi chảy dọc ống, sản phẩm ra đầu kia; tính chất thay đổi theo chiều dài, không đổi theo thời gian.',
+   uu:'Độ chuyển hóa cao; chi phí vận hành thấp; truyền nhiệt tốt',nhuoc:'Khó kiểm soát nhiệt độ; tốn chi phí khi ngưng hoạt động hoặc vệ sinh',dung:'Năng suất lớn, phản ứng nhanh, nhiệt độ cao, đồng thể và dị thể'}},
+ {id:'tcd',name:'Tầng cố định',sub:'Fixed bed · 5.2.3',scenes:[{img:'nh3-karlsruhe',t:'Thiết bị tổng hợp NH₃ cao áp: xúc tác nằm yên bên trong'},{img:'nh3-1913',t:'Lắp đặt thiết bị NH₃ đầu tiên, Oppau 1913'},{img:'catcon-cut',t:'Bộ xúc tác ô tô cắt dọc: khối tổ ong cố định'},{anim:'fixed',t:'Khí đi qua khe giữa các hạt xúc tác nằm yên'}],
+  card:{loai:'Khí – rắn, lỏng – rắn, khí – lỏng – rắn',cau:'Thân trụ; các tầng chất rắn (xúc tác hay tác chất rắn) giữ trên lưới đỡ; trao đổi nhiệt bên ngoài',ng:'Khí thổi từ đáy lên (lỏng chảy từ đỉnh xuống); phản ứng khi lưu chất tiếp xúc lớp rắn nằm yên.',
+   uu:'Chế độ vận hành đơn giản',nhuoc:'Khuếch tán, khuấy trộn bị cản trở; khó điều chỉnh nhiệt độ trong lớp',dung:'Tổng hợp NH₃, xử lý khí thải ô tô, reforming, nhiều phản ứng xúc tác rắn'}},
+ {id:'ts',name:'Tầng sôi',sub:'Fluidized bed · 5.2.2–5.2.3',scenes:[{vids:['fl-min2','fl-norm','fl-high'],cap:['Vừa qua điểm sôi','Sôi bình thường','Sôi rất mạnh'],d:8,t:'Tăng lưu lượng: lớp hạt giãn nở, sôi mạnh dần'},{vids:['fl-min','fl-bub','fl-void'],cap:['Hạt 0,8 mm','Hạt 3,5 mm','Hạt 2,5 mm'],d:7,t:'Hạt to nhỏ khác nhau đều chuyển thành lớp giả lỏng'},{img:'rfcc',t:'FCC: xúc tác tuần hoàn giữa thiết bị phản ứng và tái sinh'},{img:'rfcc6',t:'Van đường xúc tác không kín → hiđrocacbon gặp không khí → nổ'},{anim:'fluid',t:'Khí từ đáy làm hạt lơ lửng; cyclon giữ hạt lại'}],
+  card:{loai:'Khí – rắn, lỏng – rắn, khí – lỏng – rắn',cau:'Thân 2 đoạn (dưới nhỏ, trên lớn); lưới phân phối khí; bộ phận thu hồi hạt rắn (cyclon)',ng:'Khí thổi từ đáy qua bộ phân phối; tốc độ chỉnh sao cho hạt lơ lửng thành lớp giả lỏng mà không bị cuốn ra.',
+   uu:'Khuếch tán, khuấy trộn rất tốt; nhiệt độ đồng đều, dễ kiểm soát; tái sinh xúc tác liên tục',nhuoc:'Vận hành phức tạp; xúc tác bị mài mòn, vỡ tạo bụi',dung:'Cracking xúc tác (FCC), lượng nhập liệu và lượng rắn lớn'}},
+ {id:'td',name:'Tháp đệm',sub:'Packed tower · 5.2.1',scenes:[{img:'raschig',t:'Vòng Raschig bằng gốm'},{img:'pall',t:'Vòng Pall: nhiều lỗ thông, bề mặt lớn'},{anim:'packed',t:'Lỏng chảy màng xuống, khí đi ngược lên'}],
+  card:{loai:'Lỏng – khí',cau:'Thân tháp chứa lớp vật liệu đệm (vòng Raschig, vòng Pall…) trên lưới đỡ; bộ phân phối lỏng ở đỉnh',ng:'Lỏng chảy màng trên bề mặt đệm từ trên xuống; khí đi ngược từ dưới lên; dòng lỏng được chia cắt nhờ vật liệu đệm.',
+   uu:'Bề mặt tiếp xúc pha lớn, trở lực khí nhỏ, cấu tạo đơn giản',nhuoc:'Lỏng phân bố không đều nếu tưới kém; khó làm việc với chất lỏng bẩn có cặn',dung:'Hấp thụ có phản ứng'}},
+ {id:'tm',name:'Tháp mâm',sub:'Tray tower · 5.2.1',scenes:[{img:'columns',t:'Tháp cao, bên trong có nhiều mâm'},{img:'trays',t:'Mâm chóp (trái) và mâm xuyên lỗ (phải)'},{anim:'tray',d:12,t:'Lỏng chảy zic zắc: ngang mâm → tràn qua gờ → ống chảy chuyền → mâm dưới'}],
+  card:{loai:'Lỏng – khí',cau:'Thân tháp có nhiều mâm: mâm xuyên lỗ, mâm chóp, mâm van; ống chảy chuyền',ng:'Lỏng chảy zic zắc: ngang qua mâm, tràn qua gờ, xuống ống chảy chuyền sang mâm dưới (đổi phía ở mỗi mâm); khí đi lên qua lỗ, chóp hoặc van và sủi bọt qua lớp lỏng trên mâm.',
+   uu:'Tiếp xúc pha theo từng bậc rõ ràng; làm việc được với lưu lượng lớn',nhuoc:'Trở lực khí lớn hơn tháp đệm; cấu tạo phức tạp hơn',dung:'Phản ứng lỏng – khí nhiều bậc'}},
+ {id:'tsb',name:'Tháp sủi bọt',sub:'Bubble column · 5.2.1',scenes:[{img:'bubble',t:'Khí sục từ đáy qua cột lỏng nuôi vi tảo'},{anim:'bubble',t:'Bọt khí vừa tạo bề mặt tiếp xúc vừa khuấy trộn'}],
+  card:{loai:'Lỏng – khí (có thể có rắn huyền phù)',cau:'Cột chứa pha lỏng; bộ phân phối khí ở đáy',ng:'Khí sục từ đáy thành bọt đi lên qua cột lỏng; bọt khí vừa tạo bề mặt tiếp xúc vừa khuấy trộn chất lỏng.',
+   uu:'Cấu tạo đơn giản, không có bộ phận chuyển động; truyền nhiệt tốt',nhuoc:'Trộn ngược pha lỏng mạnh; bọt có thể kết lại thành bọt lớn',dung:'Oxy hóa pha lỏng, lên men hiếu khí, nuôi vi tảo'}},
+ {id:'sh',name:'TBPU có xúc tác sinh học',sub:'Bioreactor · 5.2.4',scenes:[{img:'bioreactor',t:'Bình lên men phòng thí nghiệm: khuấy, sục khí, đầu dò'},{img:'btec',t:'Dãy bình lên men bằng thép không gỉ'},{img:'enzyme',t:'Enzym làm giảm năng lượng hoạt hóa'},{anim:'bio',t:'Khuấy và sục khí cấp O₂ cho vi sinh vật'}],
+  card:{loai:'Lỏng; khí – lỏng; lỏng – rắn (tế bào, enzym)',cau:'Thường là bình khuấy có ống sục khí, vỏ áo giữ nhiệt, đầu dò pH, oxy hòa tan; vô trùng',ng:'Enzym hoặc vi sinh vật xúc tác phản ứng ở nhiệt độ, pH gần thường; vận hành gián đoạn, bán liên tục hoặc liên tục.',
+   uu:'Chọn lọc cao, điều kiện êm dịu',nhuoc:'Phải giữ vô trùng; nhạy với nhiệt độ, pH; tốc độ chậm',dung:'Lên men kháng sinh, thực phẩm, xử lý nước thải'}}];
+
+/* ---------- Vòng 1: Khởi động ---------- */
+const R1 = [
+ {q:'Trong mô hình lý tưởng nào, tính chất hỗn hợp phản ứng đồng nhất ở mọi vị trí nhưng thay đổi theo thời gian?',o:['Bình khuấy gián đoạn','Bình khuấy liên tục','Bình ống','Tầng cố định'],a:0,
+  why:'Bình khuấy gián đoạn: khuấy trộn lý tưởng nên đồng nhất theo vị trí; không có dòng vào ra nên nồng độ thay đổi theo thời gian.',ask:'Có dòng vào – ra không? Có khuấy trộn không?'},
+ {q:'Trong bình ống lý tưởng, nồng độ tác chất:',o:['Thay đổi theo chiều dài ống, không đổi theo thời gian','Thay đổi theo thời gian, đồng nhất theo chiều dài','Như nhau ở mọi điểm và mọi lúc','Giảm đột ngột ngay ở đầu vào'],a:0,
+  why:R`Dòng đẩy tịnh tiến: \(C_\mathrm{A}\) giảm dần từ \(C_\mathrm{Ao}\) ở đầu vào đến \(C_\mathrm{AL}\) ở đầu ra; ở chế độ ổn định không đổi theo thời gian.`,ask:'Các phân tố lưu chất trong ống có trộn với nhau không?'},
+ {q:'Trong bình khuấy liên tục lý tưởng, nồng độ tác chất ở ngay đầu vào:',o:['Giảm từ từ dọc theo bình','Giảm đột ngột đến bằng nồng độ trong bình và dòng ra','Bằng nồng độ dòng nhập liệu','Tăng dần theo thời gian'],a:1,
+  why:'Tác chất vào được trộn lẫn đồng đều ngay lập tức nên nồng độ thay đổi đột ngột tại đầu vào, bằng nồng độ mọi điểm và nồng độ dòng ra.',ask:'Tác chất vào được trộn nhanh đến mức nào?'},
+ {q:'Bình khuấy gián đoạn thích hợp nhất cho trường hợp nào?',o:['Sản xuất dầu mỏ năng suất rất lớn','Dược phẩm, lên men, sản phẩm đắt tiền, năng suất nhỏ','Phản ứng khí nhiệt độ cao, rất nhanh','Phản ứng khí – rắn cần tái sinh xúc tác liên tục'],a:1,
+  why:'Linh động, một thiết bị sản xuất nhiều sản phẩm, đầu tư thấp: hợp với năng suất nhỏ, dược phẩm, lên men, thử nghiệm quy trình mới.',ask:'Ưu điểm lớn nhất của bình khuấy gián đoạn là gì?'},
+ {q:'Nhược điểm chính của bình khuấy liên tục là:',o:['Chất lượng sản phẩm không ổn định','Năng suất thấp vì tốn thời gian nạp, tháo','Độ chuyển hóa thấp, muốn cao thì cần thể tích rất lớn','Không kiểm soát được nhiệt độ'],a:2,
+  why:'CSTR làm việc ở nồng độ dòng ra (thấp) nên tốc độ nhỏ: cần V lớn để đạt X_A cao. Ba phương án còn lại là nhược điểm của bình khuấy gián đoạn hoặc sai.',ask:'CSTR làm việc ở nồng độ nào?'},
+ {q:'Nhược điểm của bình ống là:',o:['Độ chuyển hóa thấp','Khó kiểm soát nhiệt độ; tốn chi phí khi ngưng hoạt động, vệ sinh','Không làm việc liên tục được','Chỉ dùng được cho pha lỏng'],a:1,
+  why:'Nhiệt phản ứng sinh ra không đều dọc ống nên khó giữ nhiệt độ; khi dừng hoặc vệ sinh tốn kém. Bình ống có độ chuyển hóa cao, dùng cho cả khí và lỏng.',ask:'Nhiệt phản ứng phân bố thế nào dọc ống?'},
+ {q:'Trong thiết bị tầng sôi, tốc độ dòng khí được điều chỉnh sao cho:',o:['Hạt rắn nằm yên trên lưới đỡ','Hạt rắn lơ lửng thành lớp giả lỏng, không bị cuốn ra khỏi thiết bị','Toàn bộ hạt bị cuốn theo khí ra ngoài','Khí đi tắt qua lớp hạt'],a:1,
+  why:'Vận tốc lớn hơn vận tốc sôi tối thiểu nhưng nhỏ hơn vận tốc lôi cuốn: hạt lơ lửng, lớp hạt cư xử như chất lỏng.',ask:'Quá nhỏ thì sao? Quá lớn thì sao?'},
+ {q:'Tháp đệm, tháp mâm và tháp sủi bọt dùng cho phản ứng của hệ:',o:['Khí – rắn','Lỏng – rắn','Lỏng – khí','Đồng thể pha khí'],a:2,
+  why:'Dòng lỏng được chia cắt nhờ vật liệu đệm, lỗ trên mâm/chóp/van hoặc dòng khí để tăng bề mặt tiếp xúc lỏng – khí.',ask:'Hai pha nào cần tiếp xúc trong tháp?'},
+ {q:'Nguyên nhân làm TBPU thực hoạt động khác mô hình lý tưởng:',o:['Vùng chết, dòng chảy tắt, dòng không tịnh tiến','Dùng xúc tác','Phản ứng thuận nghịch','Nhiệt độ phản ứng cao'],a:0,
+  why:'Vùng chết làm giảm thể tích hữu ích; chảy tắt làm một phần lưu chất ra sớm; dòng không tịnh tiến (chảy tầng, xoáy ngược) làm thời gian lưu không đều.',ask:'Nghĩ đến đường đi của từng phân tố lưu chất.'},
+ {q:'Khi chọn cánh khuấy cho bình khuấy, tính chất nào của chất lỏng quyết định nhiều nhất?',o:['Màu sắc','Độ nhớt','Áp suất hơi','Khối lượng mol'],a:1,
+  why:'Cánh khuấy chọn theo độ nhớt: nhớt thấp dùng chân vịt, turbin; nhớt cao dùng cánh neo, cánh xoắn.',ask:'Khuấy nước và khuấy mật ong khác nhau ở đâu?'},
+ {q:'Mắc nối tiếp nhiều bình khuấy liên tục thì:',o:['Mọi bình có cùng nồng độ','Thu được các dòng có nồng độ khác nhau, hệ gần với bình ống hơn','Độ chuyển hóa giảm','Phải vận hành gián đoạn'],a:1,
+  why:'Dòng ra bình trước là dòng vào bình sau; nồng độ giảm theo bậc, nhiều bình nối tiếp tiến dần về bình ống.',ask:'Dòng vào bình 2 lấy từ đâu?'},
+ {q:'Đặc điểm của TBPU hoạt động liên tục:',o:['Tính chất hỗn hợp thay đổi theo thời gian','Nạp liệu lúc bắt đầu, tháo liệu lúc kết thúc','Dòng vào, dòng ra chảy liên tục; trạng thái ổn định','Chỉ dùng cho phản ứng lỏng'],a:2,
+  why:'Liên tục: dòng nhập liệu và tháo liệu chảy liên tục, tính chất hỗn hợp không đổi theo thời gian (ổn định), có thể thay đổi theo vị trí.',ask:'So sánh với gián đoạn.'}];
+
+/* ---------- Vòng 2: Lật thẻ ghép đôi ---------- */
+const R2 = [
+ {name:'Bảng 1 · Thiết bị và đặc điểm dòng chảy',tags:['Thiết bị','Đặc điểm'],pairs:[
+  ['Bình khuấy gián đoạn','Nạp liệu lúc đầu, tháo sản phẩm lúc kết thúc'],
+  ['Bình khuấy liên tục','Dòng vào – ra liên tục, tác chất trộn ngay với hỗn hợp trong bình'],
+  ['Bình ống','Dòng tịnh tiến như piston, tính chất đổi theo chiều dài'],
+  ['Bình khuấy nối tiếp','Dòng ra bình trước là dòng vào bình sau'],
+  ['Tầng cố định','Lớp rắn nằm yên trên lưới đỡ'],
+  ['Tầng sôi','Hạt rắn lơ lửng thành lớp giả lỏng'],
+  ['Tháp đệm','Lỏng chảy màng trên vật liệu đệm, khí đi ngược lên'],
+  ['Tháp sủi bọt','Khí sục thành bọt đi lên qua cột chất lỏng']]},
+ {name:'Bảng 2 · Bộ phận và chức năng',tags:['Bộ phận','Chức năng'],pairs:[
+  ['Cánh khuấy','Trộn đều để hỗn hợp đồng nhất nồng độ và nhiệt độ'],
+  ['Vỏ áo','Tác nhân nhiệt chảy bên ngoài thành bình'],
+  ['Ống xoắn trong bình','Trao đổi nhiệt bên trong, bề mặt lớn'],
+  ['Thiết bị ngưng tụ hồi lưu','Ngưng hơi bốc lên, trả lỏng về bình'],
+  ['Lưới phân phối khí (tầng sôi)','Phân phối khí đều từ đáy, đỡ lớp hạt'],
+  ['Cyclon','Thu hồi hạt rắn bị khí cuốn theo'],
+  ['Chóp, van, lỗ trên mâm','Chia khí thành bọt qua lớp lỏng trên mâm'],
+  ['Ống ngoài của ống lồng ống','Dẫn tác nhân trao đổi nhiệt cùng chiều hay ngược chiều']]},
+ {name:'Bảng 3 · Ưu và nhược điểm',tags:['Thiết bị','Ưu / nhược'],pairs:[
+  ['Ưu điểm bình khuấy gián đoạn','Linh động, đầu tư thấp, chủ động thời gian phản ứng'],
+  ['Nhược điểm bình khuấy gián đoạn','Năng suất thấp, chất lượng khác nhau giữa các mẻ'],
+  ['Ưu điểm bình khuấy liên tục','Năng suất cao, chất lượng ổn định, tự động hóa cao'],
+  ['Nhược điểm bình khuấy liên tục',R`\(X_\mathrm{A}\) thấp, muốn cao cần thể tích rất lớn`],
+  ['Ưu điểm bình ống','Độ chuyển hóa cao, chi phí vận hành thấp'],
+  ['Nhược điểm bình ống','Khó kiểm soát nhiệt độ, tốn kém khi dừng và vệ sinh'],
+  ['Ưu điểm tầng sôi','Khuấy trộn rất tốt, tái sinh xúc tác liên tục'],
+  ['Nhược điểm tầng sôi','Vận hành phức tạp, xúc tác vỡ tạo bụi']]}];
+
+const TH=[[{anim:'batch'},{anim:'cstr'},{img:'tubular'},{anim:'series'},{img:'catcon-cut'},{vid:'fl-norm'},{img:'raschig'},{img:'bubble'}],
+ [{img:'cuve'},{img:'halfcoil'},{anim:'cstr'},null,{img:'fb-diagram'},{anim:'fluid'},{img:'trays'},{anim:'pfr'}],
+ [{img:'penicillin'},{img:'penicillin'},{img:'cstr-inside'},{img:'cstr-inside'},{img:'tubular'},{img:'tubular'},{img:'rfcc'},{img:'rfcc6'}]];
+TH.forEach((b,k)=>b.forEach((m,i)=>{if(m)R2[k].pairs[i][2]=m;}));
+function thumb(m,big){if(!m)return '';if(m.img)return `<img class="${big?'pbig':'thb'}" src="img/${m.img}.jpg" alt="">`;
+  if(m.vid)return `<video class="${big?'pbig':'thb'}" src="vid/${m.vid}.mp4" autoplay muted loop playsinline></video>`;
+  return `<span class="${big?'pbig':'thb'} tha">${animSVG(m.anim,{labels:false,tight:!big})}</span>`;}
+
+/* ---------- Vòng 3: Phân nhóm ---------- */
+const PN = [
+ {name:'Gián đoạn hay liên tục?',groups:['Gián đoạn','Liên tục'],items:[
+  ['Nạp liệu lúc bắt đầu, tháo liệu lúc kết thúc',0,'Chỉ nạp, tháo ở một thời điểm ngắn.'],
+  ['Tính chất hỗn hợp thay đổi theo thời gian',0,'Mức độ phản ứng tăng dần theo thời gian.'],
+  ['Trạng thái ổn định',1,'Tính chất không đổi theo thời gian.'],
+  ['Dòng vào và dòng ra chảy liên tục',1,'Đặc điểm định nghĩa của TBPU liên tục.'],
+  ['Dược phẩm, lên men, sản phẩm đắt tiền',0,'Năng suất nhỏ, cần linh động.'],
+  ['Năng suất lớn, chất lượng ổn định',1,'Không tốn thời gian nạp, tháo.'],
+  ['Thử nghiệm quy trình mới',0,'Một thiết bị dùng cho nhiều sản phẩm, điều kiện.'],
+  ['Mức độ cơ giới hóa và tự động hóa cao',1,'Cần hệ điều khiển giữ chế độ ổn định.']]},
+ {name:'Tầng cố định hay tầng sôi?',groups:['Tầng cố định','Tầng sôi'],items:[
+  ['Lớp rắn nằm yên trên lưới đỡ',0,'Hạt không chuyển động.'],
+  ['Hạt rắn lơ lửng thành lớp giả lỏng',1,'Vận tốc khí lớn hơn vận tốc sôi tối thiểu.'],
+  ['Chế độ vận hành đơn giản',0,'Ưu điểm chính của tầng cố định.'],
+  ['Tái sinh xúc tác liên tục',1,'Hạt rắn chảy được như chất lỏng nên chuyển qua lại thiết bị tái sinh.'],
+  ['Xúc tác bị mài mòn, vỡ tạo bụi',1,'Hạt va chạm liên tục.'],
+  ['Thân 2 đoạn: dưới nhỏ, trên lớn, có thu hồi rắn',1,'Phần trên mở rộng làm giảm vận tốc khí để hạt rơi lại.'],
+  [R`Thiết bị tổng hợp NH₃ cao áp`,0,'Xúc tác sắt đặt cố định trong thiết bị.'],
+  ['Bộ chuyển đổi xúc tác ô tô',0,'Khối xúc tác tổ ong nằm cố định, khí thải chảy qua.']]},
+ {name:'Mô hình lý tưởng hay TBPU thực?',groups:['Mô hình lý tưởng','TBPU thực'],items:[
+  ['Nồng độ như nhau ở mọi điểm trong bình khuấy',0,'Giả thiết khuấy trộn hoàn toàn.'],
+  ['Góc bình có vùng chết, chất lỏng gần như đứng yên',1,'Giảm thể tích làm việc hữu ích.'],
+  ['Một phần dòng đi tắt từ đầu vào ra đầu ra',1,'Chảy tắt: thời gian lưu rất ngắn.'],
+  ['Mọi phần tử lưu chất trong ống có cùng thời gian lưu',0,'Dòng đẩy lý tưởng.'],
+  ['Dòng chảy tầng: tâm ống chảy nhanh, sát thành chậm',1,'Profin vận tốc parabol, thời gian lưu không đều.'],
+  ['Phân tố lưu chất tiến như piston, không trộn theo chiều dọc',0,'Định nghĩa mô hình đẩy lý tưởng.'],
+  ['Tác chất vào được trộn đều ngay lập tức',0,'Định nghĩa khuấy lý tưởng liên tục.'],
+  ['Dòng xoáy tuần hoàn ngược trong ống',1,'Trộn ngược làm lệch khỏi dòng đẩy.']]}];
+
+PN[0].gm=[{anim:'batch'},{anim:'cstr'}];PN[1].gm=[{img:'nh3-karlsruhe'},{vid:'fl-norm'}];PN[2].gm=[{anim:'pfr'},{anim:'pfrReal'}];
+
+/* ---------- Vòng 4: Soi thiết bị (ảnh thật, video) ---------- */
+const R3 = [
+ {m:{img:'cstr-inside',kb:[0,0,1,4,-8,1.25]},ctx:'Ảnh chụp bên trong một bình phản ứng bằng thép khi kiểm tra định kỳ.',qq:'Bộ phận lớn phía trên đầu người kỹ sư là gì?',o:['Cánh khuấy','Ống xoắn trao đổi nhiệt','Mâm chóp','Lưới phân phối khí'],a:0,
+  why:'Các bản cánh gắn trên trục giữa bình: cánh khuấy (tầng trên) của bình khuấy.',ask:'Bộ phận nào gắn trên trục quay giữa bình?'},
+ {m:{img:'jacket',kb:[0,0,1,-6,4,1.2]},ctx:'Hai bình phản ứng đang được lắp đặt. Quanh thân bình có các vòng gân nổi liên tục.',qq:'Các vòng gân nổi đó dùng để:',o:['Dẫn tác nhân trao đổi nhiệt (vỏ áo dạng nửa ống)','Chứa vật liệu đệm','Phân phối khí vào bình','Thu hồi hạt rắn'],a:0,
+  why:'Đây là vỏ áo dạng nửa ống (half-pipe jacket) hàn quanh thân; tác nhân nóng hoặc lạnh chảy trong đó để trao đổi nhiệt qua thành bình.',ask:'Bình khuấy có những kiểu trao đổi nhiệt nào?'},
+ {m:{img:'tubular',kb:[0,0,1,0,0,1.25]},ctx:'Môi trường lỏng chảy liên tục trong dãy ống trong suốt rất dài, ghép nối tiếp nhau.',qq:'Mô hình lý tưởng gần với thiết bị này nhất:',o:['Bình khuấy gián đoạn','Bình khuấy liên tục','Bình ống (dòng đẩy)','Tầng sôi'],a:2,
+  why:'Ống dài, dòng chảy dọc ống, không khuấy: gần với mô hình đẩy lý tưởng (bình ống).',ask:'Có cánh khuấy không? Dòng chảy theo hướng nào?'},
+ {m:{vid:'fl-norm'},ctx:'Video thí nghiệm: nước được bơm từ dưới lên qua cột chứa hạt thủy tinh 1,5 mm.',qq:'Lớp hạt trong video đang ở trạng thái nào?',o:['Tầng cố định','Tầng sôi (lớp giả lỏng)','Tháp sủi bọt','Bình ống'],a:1,
+  why:'Lớp hạt giãn nở, các hạt chuyển động hỗn loạn nhưng không bị cuốn ra: tầng sôi lỏng – rắn.',ask:'Các hạt đứng yên hay chuyển động?'},
+ {m:{img:'nh3-karlsruhe',kb:[0,8,1,0,-14,1.2]},ctx:'Thiết bị phản ứng cao áp tổng hợp NH₃ (BASF). Bên trong, xúc tác sắt được xếp cố định, hỗn hợp N₂ + H₂ chảy qua.',qq:'Thiết bị này thuộc loại:',o:['Tầng cố định','Tầng sôi','Tháp mâm','Bình khuấy'],a:0,
+  why:'Xúc tác rắn nằm yên, khí phản ứng chảy qua lớp xúc tác: thiết bị tầng cố định.',ask:'Xúc tác có chuyển động không?'},
+ {m:{img:'catcon-cut',kb:[0,0,1,6,0,1.25]},ctx:'Bộ chuyển đổi xúc tác của ô tô được cắt dọc. Khí thải đi qua khối tổ ong bên trong.',qq:'Khối tổ ong bên trong là:',o:['Lớp xúc tác cố định','Lớp hạt giả lỏng','Cánh khuấy','Mâm xuyên lỗ'],a:0,
+  why:'Khối xúc tác kim loại dạng tổ ong (monolith) nằm cố định; CO, hiđrocacbon, NOₓ phản ứng trên bề mặt: TBPU khí – rắn tầng cố định.',ask:'Khối này có di chuyển khi xe chạy không?'},
+ {m:{img:'rfcc',kb:[0,0,1,0,0,1.1]},ctx:'Sơ đồ cracking xúc tác cặn dầu (RFCC): xúc tác hạt mịn đi từ thiết bị phản ứng sang thiết bị tái sinh rồi quay lại.',qq:'Muốn xúc tác tuần hoàn liên tục như vậy, thiết bị phải là:',o:['Tầng cố định','Tầng sôi','Tháp đệm','Bình khuấy gián đoạn'],a:1,
+  why:'Chỉ khi hạt ở trạng thái giả lỏng mới chảy được giữa hai thiết bị: tầng sôi cho phép tái sinh xúc tác liên tục.',ask:'Hạt rắn nằm yên thì có chuyển sang thiết bị khác được không?'},
+ {m:{img:'raschig',kb:[0,0,1,4,4,1.2]},ctx:'Các vòng gốm hình trụ rỗng (vòng Raschig) được đổ đầy vào thân tháp.',qq:'Chúng được dùng trong:',o:['Tháp mâm','Tháp đệm','Tầng sôi','Bình ống'],a:1,
+  why:'Vòng Raschig là vật liệu đệm: chất lỏng chảy màng trên bề mặt, tạo bề mặt tiếp xúc lỏng – khí lớn.',ask:'Tên gọi khác của vật liệu này?'},
+ {m:{img:'trays',kb:[0,0,1,0,0,1.1]},ctx:'Hình vẽ năm 1906 hai loại mâm (nhìn ngang ở trên, nhìn từ trên xuống ở dưới).',qq:'Mâm bên trái và mâm bên phải lần lượt là:',o:['Mâm chóp và mâm xuyên lỗ','Mâm xuyên lỗ và mâm chóp','Mâm van và mâm chóp','Lưới đỡ đệm và mâm van'],a:0,
+  why:'Trái: có các nắp tròn úp trên ống hơi (chóp). Phải: mặt mâm đục nhiều lỗ nhỏ (xuyên lỗ).',ask:'Bên nào có nắp úp, bên nào chỉ có lỗ?'},
+ {m:{img:'bubble',kb:[0,6,1,0,-6,1.15]},ctx:'Thiết bị nuôi vi tảo: khí giàu CO₂ được sục từ đáy, đi lên thành bọt qua cột môi trường lỏng; không có cánh khuấy.',qq:'Loại TBPU này là:',o:['Tháp sủi bọt','Tháp đệm','Tầng cố định','Bình khuấy liên tục'],a:0,
+  why:'Khí phân tán thành bọt qua cột chất lỏng, bọt khí đồng thời khuấy trộn: tháp sủi bọt.',ask:'Cái gì khuấy trộn chất lỏng khi không có cánh khuấy?'},
+ {m:{img:'penicillin',kb:[0,0,1,-6,4,1.25]},ctx:'Thiết bị lên men sản xuất penicillin năm 1957. Nấm Penicillium sinh trưởng trong môi trường lỏng được khuấy và sục khí.',qq:'Chất xúc tác cho quá trình trong thiết bị này là:',o:['Xúc tác sinh học (enzym của vi sinh vật)','Xúc tác kim loại cố định','Hạt xúc tác tầng sôi','Không có xúc tác'],a:0,
+  why:'Thiết bị lên men là TBPU có xúc tác sinh học (5.2.4): enzym trong tế bào vi sinh vật xúc tác các phản ứng.',ask:'Ai “làm việc” trong bình lên men?'},
+ {m:{img:'enzyme',kb:[0,0,1,0,0,1.06]},ctx:'Giản đồ năng lượng của phản ứng A + B → AB khi không có (đỏ) và có enzym (xanh).',qq:'Enzym làm phản ứng nhanh hơn vì:',o:['Giảm năng lượng hoạt hóa','Tăng nhiệt phản ứng','Làm cân bằng chuyển dịch về phía sản phẩm','Tăng năng lượng của sản phẩm'],a:0,
+  why:R`Đỉnh đường xanh thấp hơn: enzym giảm \(E_\mathrm{a}\); mức năng lượng đầu và cuối không đổi nên không làm thay đổi nhiệt phản ứng và cân bằng.`,ask:'So sánh độ cao hai đỉnh và hai mức đầu – cuối.'}];
+[{img:'penicillin'},{anim:'pfr',labels:false},{anim:'cstr',labels:false},{img:'btec'},{img:'cstr-inside'},{img:'tubular'},{vid:'fl-norm'},{img:'columns'},{anim:'pfrReal',labels:false},{img:'cuve'},{anim:'series',labels:false},{img:'jacket'}].forEach((m,i)=>R1[i].m=m);
+['Gián đoạn = nồi cơm: cho gạo vào, nấu, rồi xới ra. Trong nồi chỗ nào cũng như nhau, chỉ thay đổi theo thời gian.',
+ 'Bình ống = dòng xe trên đường một làn: xe vào trước ra trước, càng đi xa càng “cạn xăng” (C giảm theo chiều dài).',
+ 'CSTR = nồi lẩu đang sôi: đổ nước mới vào là hòa đều ngay, muỗng múc ra giống hệt trong nồi.',
+ 'Gián đoạn hợp “hàng thủ công cao cấp”: làm ít, giá đắt, hay đổi mẫu.',
+ 'CSTR luôn làm việc ở nồng độ thấp của dòng ra → tốc độ nhỏ → cần bình to.',
+ 'Ống dài: nhiệt sinh ra dồn ở đoạn đầu ống (điểm nóng) → khó giữ nhiệt độ đều.',
+ 'Tầng sôi = cát dưới vòi nước: nước yếu – cát nằm yên; vừa đủ – cát nhảy múa; quá mạnh – cát trôi mất.',
+ 'Tháp là nơi lỏng và khí “hẹn gặp”: đệm chia lỏng thành màng, mâm chia khí thành bọt.',
+ 'Ba “kẻ phá” mô hình lý tưởng: vùng chết (ngủ quên), chảy tắt (đi đường tắt), trộn ngược (đi lùi).',
+ 'Nước loãng – chân vịt quay nhanh; mật ong đặc – cánh neo quét sát thành.',
+ 'Nhiều bình nối tiếp = cầu thang: nồng độ giảm theo từng bậc; càng nhiều bậc càng giống con dốc (bình ống).',
+ 'Liên tục = ổn định: chụp ảnh lúc 8 giờ hay 10 giờ, trong bình vẫn như nhau.'].forEach((t,i)=>R1[i].meo=t);
+R3.splice(4,0,{m:{vid:'fl-min2'},ctx:'Video: hạt thủy tinh 1,5 mm, lưu lượng nước vừa vượt điểm sôi tối thiểu.',qq:'Nếu giảm lưu lượng xuống thấp hơn điểm sôi tối thiểu, lớp hạt sẽ:',o:['Trở về tầng cố định','Sôi mạnh hơn','Bị cuốn ra khỏi cột','Tạo thành bọt khí'],a:0,
+  why:'Dưới vận tốc sôi tối thiểu, lực đẩy của dòng không đủ nâng hạt: các hạt nằm yên trên nhau như tầng cố định.',ask:'Lực nào nâng các hạt lên?'});
+R3.splice(8,0,{m:{img:'rfcc6',kb:[0,0,1,0,6,1.12]},ctx:'Sơ đồ của tác giả minh họa sự cố tại hai nhà máy lọc dầu (Torrance 2015, Superior 2018): thiết bị phản ứng chứa hơi dầu, thiết bị tái sinh đốt cốc bằng không khí.',qq:'Điều gì dẫn tới vụ nổ?',o:['Hiđrocacbon và không khí trộn lẫn qua đường xúc tác khi van không kín','Xúc tác bị vỡ tạo bụi','Nhiệt độ lớp sôi quá đồng đều','Khí đi tắt qua lớp hạt'],a:0,
+  why:'Các van trên đường dẫn xúc tác phải ngăn hai phía trộn lẫn. Giữ áp suất, lưu lượng xúc tác và độ kín van là lý do tầng sôi FCC “vận hành phức tạp”.',ask:'Hai thiết bị chứa những chất gì?'});
+
+/* ---------- Vòng 5: Bộ phận bí ẩn (hoạt hình mặt cắt + ảnh) ---------- */
+const OPT_TANK=['Vỏ áo','Ống xoắn','Cánh khuấy','Trục khuấy'];
+const R4 = [
+ {m:{anim:'cstr',mark:'jacket'},ctx:'Mặt cắt bình khuấy liên tục.',qq:'Bộ phận có dấu ? (lớp màu cam bao ngoài thân bình) là:',o:OPT_TANK,a:0,why:'Vỏ áo: tác nhân nhiệt chảy trong khoảng giữa vỏ ngoài và thành bình.',ask:'Nằm trong hay ngoài thành bình?'},
+ {m:{anim:'cstr',mark:'coil'},ctx:'Mặt cắt bình khuấy liên tục.',qq:'Các vòng tròn màu cam sát thành trong của bình là:',o:OPT_TANK,a:1,why:'Mặt cắt của ống xoắn trao đổi nhiệt đặt bên trong bình.',ask:'Ống quấn lò xo bị cắt ngang thì thấy hình gì?'},
+ {m:{anim:'cstr',mark:'imp'},ctx:'Mặt cắt bình khuấy liên tục.',qq:'Bộ phận có dấu ? là:',o:OPT_TANK,a:2,why:'Cánh khuấy tạo dòng tuần hoàn (các chấm trắng) làm hỗn hợp đồng nhất.',ask:'Bộ phận nào đang quay?'},
+ {m:{anim:'fluid',mark:'grid'},ctx:'Mặt cắt thiết bị tầng sôi khí – rắn.',qq:'Bộ phận có dấu ? ở đáy lớp hạt là:',o:['Lưới phân phối khí','Cyclon','Vật liệu đệm','Mâm chóp'],a:0,why:'Lưới (bộ phân phối) chia khí đều trên toàn tiết diện và đỡ lớp hạt khi ngừng thổi khí.',ask:'Khí vào từ đâu?'},
+ {m:{anim:'fluid',mark:'cyc'},ctx:'Mặt cắt thiết bị tầng sôi khí – rắn.',qq:'Bộ phận có dấu ? ở phần trên thiết bị là:',o:['Lưới phân phối khí','Cyclon thu hồi hạt rắn','Ống chảy chuyền','Vỏ áo'],a:1,why:'Cyclon tách các hạt bị khí cuốn theo và trả về lớp sôi qua ống dẫn xuống.',ask:'Các chấm nâu bay lên rồi đi đâu?'},
+ {m:{anim:'fluid',mark:'top'},ctx:'Mặt cắt thiết bị tầng sôi khí – rắn.',qq:'Vì sao phần trên của thiết bị có đường kính lớn hơn?',o:['Giảm vận tốc khí để hạt rơi lại lớp sôi','Tăng vận tốc khí','Để chứa thêm xúc tác','Để lắp cánh khuấy'],a:0,why:R`Cùng lưu lượng, tiết diện lớn hơn thì vận tốc khí nhỏ hơn: hạt không bị cuốn ra ngoài.`,ask:R`Vận tốc = lưu lượng / tiết diện.`},
+ {m:{anim:'packed',mark:'pack'},ctx:'Mặt cắt tháp đệm.',qq:'Vùng có dấu ? chứa:',o:['Vật liệu đệm','Xúc tác tầng sôi','Ống xoắn','Các mâm chóp'],a:0,why:'Lớp vật liệu đệm (vòng Raschig, vòng Pall…) để lỏng chảy màng, tăng bề mặt tiếp xúc với khí.',ask:'Các vòng tròn nhỏ là gì?'},
+ {m:{anim:'tray',mark:'down'},ctx:'Mặt cắt tháp mâm chóp.',qq:'Đoạn có dấu ? (vách đứng ở mép mâm) để:',o:['Dẫn lỏng từ mâm trên xuống mâm dưới','Dẫn khí đi lên','Đỡ vật liệu đệm','Thu hồi hạt rắn'],a:0,why:'Ống chảy chuyền dẫn chất lỏng xuống mâm dưới; khí đi lên qua chóp.',ask:'Theo dõi chấm xanh đậm.'},
+ {m:{anim:'pfr',mark:'outer'},ctx:'Mặt cắt bình ống dạng ống lồng ống.',qq:'Khoảng không gian có dấu ? chứa:',o:['Hỗn hợp phản ứng','Tác nhân trao đổi nhiệt','Xúc tác rắn','Khí trơ'],a:1,why:'Ống ngoài dẫn tác nhân trao đổi nhiệt, ở đây chảy ngược chiều dòng phản ứng.',ask:'Chấm cam chạy theo hướng nào?'},
+ {m:{anim:'bubble',mark:'spar'},ctx:'Mặt cắt tháp sủi bọt.',qq:'Bộ phận có dấu ? là:',o:['Ống sục (bộ phân phối khí)','Cánh khuấy','Lưới đỡ đệm','Cyclon'],a:0,why:'Ống sục phân tán khí thành bọt nhỏ ngay ở đáy cột lỏng.',ask:'Bọt khí xuất phát từ đâu?'},
+ {m:{anim:'pfrReal'},ctx:'Dòng chảy trong một ống phản ứng: các chấm trắng ở tâm ống chạy nhanh, sát thành ống chạy chậm.',qq:'Đây là dòng chảy của:',o:['Bình ống lý tưởng','Bình ống thực (dòng chảy tầng)','Bình khuấy lý tưởng','Tầng sôi'],a:1,why:'Profin vận tốc parabol: thời gian lưu khác nhau giữa tâm và sát thành, lệch khỏi dòng đẩy lý tưởng.',ask:'Trong dòng đẩy lý tưởng các phân tố có cùng vận tốc không?'},
+ {m:{img:'cuve',kb:[0,-4,1.05,0,4,1.1],marks:[[32,43,'?']]},ctx:'Sơ đồ bình khuấy (tài liệu tiếng Pháp).',qq:'Bộ phận có dấu ? là:',o:['Cánh khuấy','Hộp giảm tốc','Vách ngăn','Ống xoắn'],a:0,why:'“Hélice” là cánh khuấy dạng chân vịt; bình này có hai tầng cánh trên cùng một trục.',ask:'Nó gắn ở đâu trên trục?'}];
+
+/* ---------- Vòng 6: Về đích ---------- */
+const R5 = [
+ {type:'order',title:'Sắp thứ tự: một mẻ của bình khuấy gián đoạn',steps:[
+   'Nạp tác chất vào bình','Khuấy và đun nóng đến nhiệt độ phản ứng',R`Giữ phản ứng đến khi đạt \(X_\mathrm{A}\) yêu cầu`,'Làm nguội, tháo sản phẩm','Làm sạch thiết bị, chuẩn bị mẻ sau']},
+ {type:'error',title:'Tìm dòng sai đầu tiên: mô tả bình khuấy liên tục lý tưởng',lines:[
+   'Dòng tác chất được cấp liên tục vào bình','Tác chất vào được trộn đều ngay lập tức với hỗn hợp trong bình','Nồng độ tác chất giảm dần từ đầu vào đến đầu ra của bình','Dòng sản phẩm ra có nồng độ bằng nồng độ trong bình'],bad:2,
+  fix:'Trong CSTR lý tưởng nồng độ như nhau ở mọi điểm; nồng độ giảm dần theo vị trí là đặc điểm của bình ống.'},
+ {type:'order',title:'Sắp thứ tự: tăng dần vận tốc dòng lưu chất qua lớp hạt (video 4TU)',steps:[
+   'Lớp hạt nằm yên: tầng cố định','Vận tốc sôi tối thiểu: lớp hạt bắt đầu “nổi”','Tầng sôi: lớp hạt giãn nở, hạt chuyển động hỗn loạn','Tầng sôi mạnh, không đồng nhất','Hạt bị lôi cuốn ra khỏi thiết bị']},
+ {type:'error',title:'Tìm dòng sai đầu tiên: mô tả thiết bị tầng cố định',lines:[
+   'Thân thiết bị hình trụ, bên trong có các tầng chất rắn','Chất rắn được giữ trên lớp lưới đỡ','Dòng khí thổi từ đáy lên làm hạt xúc tác lơ lửng','Thiết bị trao đổi nhiệt đặt bên ngoài'],bad:2,
+  fix:'Trong tầng cố định hạt rắn nằm yên; khí đi qua khe giữa các hạt. Hạt lơ lửng là tầng sôi.'},
+ {type:'order',title:'Sắp thứ tự: đường đi của chất lỏng trong tháp đệm',steps:[
+   'Lỏng vào ở đỉnh tháp','Bộ phân phối tưới đều lỏng trên tiết diện','Lỏng chảy màng trên bề mặt vật liệu đệm, tiếp xúc khí đi lên và phản ứng','Lỏng qua lưới đỡ, gom ở đáy tháp','Lỏng ra ở đáy tháp']},
+ {type:'error',title:'Tìm dòng sai đầu tiên: ưu điểm của bình khuấy gián đoạn',lines:[
+   'Đạt độ chuyển hóa cao vì chủ động được thời gian phản ứng','Linh động: một thiết bị sản xuất nhiều sản phẩm','Năng suất cao vì không tốn thời gian nạp liệu và tháo sản phẩm','Dễ vệ sinh thiết bị'],bad:2,
+  fix:'Năng suất cao, không tốn thời gian nạp – tháo là ưu điểm của bình khuấy liên tục. Bình gián đoạn có năng suất thấp.'}];
+[{anim:'batch'},{anim:'cstr'},{vids:['fl-min2','fl-norm','fl-high'],cap:['?','?','?']},{anim:'fixed'},{anim:'packed'},{img:'penicillin'}].forEach((m,i)=>R5[i].m=m);
+R5[2].m={vid:'fl-high'};
+
+/* ================= PHÒNG CHIẾU: mỗi thiết bị ≈ 30–45 s (ảnh/video thật zoom-lia → hoạt hình mặt cắt có nhãn → thẻ tóm tắt) ================= */
+const SH={dev:0,sc:0,play:true,t0:0,h:null};
+const QP=new URLSearchParams(location.search),REC=QP.has('rec')?+QP.get('rec'):null;
+const KBS=[[-4,3,1.02,4,-3,1.24],[4,-3,1.22,-4,3,1.02],[0,5,1.03,0,-5,1.26],[-5,0,1.05,5,0,1.25]];
+function scDur(sc){return (sc.d||(sc.anim?10:sc.card?8:sc.credit?6:5.5))*1000;}
+function devScenes(d){return [...d.scenes,{card:true},...(REC!==null?[{credit:true}]:[])];}
+function devTotal(d){return Math.round(devScenes(d).reduce((a,s)=>a+scDur(s),0)/1000);}
+function cardHTML(d){const c=d.card;return `<div class="scard"><h3>${d.name}</h3><dl>
+  <dt>Loại phản ứng</dt><dd>${c.loai}</dd><dt>Cấu tạo</dt><dd>${c.cau}</dd><dt>Nguyên lý</dt><dd>${c.ng}</dd>
+  <dt class="up">Ưu điểm</dt><dd>${c.uu}</dd><dt class="dn">Nhược điểm</dt><dd>${c.nhuoc}</dd><dt>Ứng dụng</dt><dd>${c.dung}</dd></dl></div>`;}
+const LIC={'CC BY-SA 4.0':'creativecommons.org/licenses/by-sa/4.0','CC BY-SA 3.0':'creativecommons.org/licenses/by-sa/3.0','CC BY-SA 2.0':'creativecommons.org/licenses/by-sa/2.0','CC BY 3.0':'creativecommons.org/licenses/by/3.0','CC BY 2.5':'creativecommons.org/licenses/by/2.5','CC BY 2.0':'creativecommons.org/licenses/by/2.0'};
+function creditHTML(d){const im=[...new Set(d.scenes.filter(x=>x.img).map(x=>x.img))],hasV=d.scenes.some(x=>x.vid||x.vids);
+  return `<div class="scard cred"><h3>Nguồn hình ảnh</h3><ul>${im.map(k=>{const v=IMG[k];return `<li><b>${esc(v[5])}</b> – ${esc(v[3])}, ${v[4]}${LIC[v[4]]?` (${LIC[v[4]]})`:''}, Wikimedia Commons</li>`;}).join('')}
+   ${hasV?`<li><b>Video tầng sôi lỏng – rắn</b> – Kramer, O. (2019), 4TU.ResearchData, CC0</li>`:''}
+   <li>Hoạt hình mặt cắt: minh họa nguyên lý, không theo tỉ lệ</li></ul><p>Ảnh được thu nhỏ, cắt khung và thêm hiệu ứng chuyển động, nhãn chữ.</p></div>`;}
+function sceneHTML(d,sc,k){if(sc.card)return cardHTML(d);if(sc.credit)return creditHTML(d);
+  const rib=sc.t?`<div class="rib"><span>${sc.t}</span></div>`:'';
+  const cap=REC!==null?false:undefined;
+  if(sc.anim)return `<div class="sw an">${media({anim:sc.anim,labels:true,cap:REC!==null?'':'Hoạt hình mặt cắt (minh họa nguyên lý, không theo tỉ lệ)'})}${rib}</div>`;
+  const m={...sc};if(m.img&&!m.kb)m.kb=KBS[k%KBS.length];if(m.img)m.d=Math.max(5,(sc.d||5.5)+.5);
+  return `<div class="sw">${media(m,{cap})}${rib}</div>`;}
+function vShow(){const d=DEV[SH.dev],S5=devScenes(d),sc=S5[Math.min(SH.sc,S5.length-1)];
+  $('#stage').style.setProperty('--rc','#0E7490');$('#stage').style.setProperty('--rc2','#22C55E');
+  const intro=SH.sc===0?`<div class="intro" id="intro"><b>${SH.dev+1}</b><span>${d.name}<small>${d.sub}</small></span></div>`:'';
+  $('#stage').innerHTML=`<div class="rhead"><span class="rnum">${REC!==null?'KTPU · Chương 5':'📽 Phòng chiếu'}</span><h1>${d.name}</h1><span class="qcount">${d.sub}${REC!==null?'':` · ≈ ${devTotal(d)} s`}</span>
+   ${REC!==null?'':`<span class="rule">Ảnh hoặc video thật (zoom, lia) → hoạt hình mặt cắt có nhãn bộ phận → thẻ tóm tắt. Phím ← → đổi cảnh, phím cách để dừng / chạy.</span>`}</div>
+   <div class="show"><nav class="dlist" aria-label="Danh sách thiết bị">${DEV.map((x,k)=>`<button data-dev="${k}" ${k===SH.dev?'aria-current="true"':''}><b>${k+1}</b>${x.name}</button>`).join('')}</nav>
+   <div class="screen"><div class="scene" id="scene">${sceneHTML(d,sc,SH.sc)}${intro}</div>
+    <div class="segs">${S5.map((x,k)=>`<button class="seg${k<SH.sc?' done':''}${k===SH.sc?' on':''}" data-sc="${k}" style="flex:${scDur(x)}" aria-label="Cảnh ${k+1}"><i></i></button>`).join('')}</div></div></div>`;
+  $('#ctrl').innerHTML=`<button class="btn" id="shPrev">‹ Cảnh trước</button><button class="btn pri" id="shPlay">${SH.play?'⏸ Tạm dừng':'▶ Chạy'}</button><button class="btn" id="shNext">Cảnh tiếp ›</button>
+   <span class="sp"></span><button class="btn" data-go="src">📷 Nguồn ảnh</button><button class="btn gold" data-go="r3">Vào vòng Soi thiết bị ›</button>`;
+  if(!RM())sWhoosh();shRun();clearTimeout(SH.it);SH.it=setTimeout(()=>{const e=$('#intro');if(e)e.remove();},1800);}
+function sWhoosh(){if(REC!==null)return;tone(300,.25,'sine',.04,0,900);}
+function shRun(){clearTimeout(SH.h);cancelAnimationFrame(SH.raf);const d=DEV[SH.dev],S5=devScenes(d),dur=scDur(S5[SH.sc]);
+  const seg=document.querySelector('.seg.on i');SH.t0=performance.now()-(SH.el||0);
+  const tick=()=>{const p=Math.min(1,(performance.now()-SH.t0)/dur);if(seg)seg.style.width=(p*100)+'%';
+    if(!SH.play){SH.el=performance.now()-SH.t0;return;}if(p>=1){SH.el=0;shGo(1,true);return;}SH.raf=requestAnimationFrame(tick);};
+  document.querySelectorAll('#scene video').forEach(v=>{v.currentTime=0;SH.play?v.play().catch(()=>{}):v.pause();});
+  document.querySelectorAll('#scene .kbi').forEach(e=>e.style.animationPlayState=SH.play?'running':'paused');
+  SH.raf=requestAnimationFrame(tick);}
+function shGo(n,auto){const S5=devScenes(DEV[SH.dev]);let s=SH.sc+n,d=SH.dev;
+  if(REC!==null&&s>=S5.length){SH.play=false;window.__recDone=true;return;}
+  if(s>=S5.length){d=(d+1)%DEV.length;s=0;}else if(s<0){d=(d-1+DEV.length)%DEV.length;s=devScenes(DEV[d]).length-1;}
+  SH.dev=d;SH.sc=s;SH.el=0;if(S.view==='show')render();}
+if(REC!==null){document.documentElement.classList.add('rec');SH.dev=REC;SH.sc=0;SH.play=false;window.__recStart=()=>{SH.play=true;S.view='show';render();};}
+function vSrc(){$('#stage').style.setProperty('--rc','#475569');$('#stage').style.setProperty('--rc2','#94A3B8');
+  const rows=Object.entries(IMG).map(([k,v])=>`<tr><td><img src="img/${k}.jpg" alt="" loading="lazy"></td><td>${v[2]}</td><td>${esc(v[3])}</td><td>${v[4]}</td><td><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(v[5].replace(/ /g,'_'))}" target="_blank" rel="noopener">${esc(v[5])}</a></td></tr>`).join('');
+  $('#stage').innerHTML=`<div class="rhead"><span class="rnum">📷</span><h1>Nguồn ảnh và video</h1><span class="rule">Ảnh lấy từ Wikimedia Commons, dùng theo giấy phép ghi bên cạnh (Public domain, CC0, CC BY, CC BY-SA); ảnh đã được thu nhỏ, không chỉnh sửa nội dung. Hoạt hình mặt cắt vẽ riêng cho game (minh họa nguyên lý, không theo tỉ lệ).</span></div>
+   <div class="tblw"><table class="tbl srct"><thead><tr><th>Ảnh</th><th>Nội dung</th><th>Tác giả</th><th>Giấy phép</th><th>Tệp gốc trên Commons</th></tr></thead><tbody>${rows}
+   <tr><td>🎥</td><td>Video tầng sôi lỏng – rắn (6 đoạn 7 s cắt từ video 06, 09, 12, 13, 17, 19; đã cắt bỏ dải chữ thông tin)</td><td>Onno Kramer</td><td>CC0</td><td>${VIDSRC}</td></tr></tbody></table></div>`;
+  $('#ctrl').innerHTML=`<button class="btn" data-go="show">‹ Phòng chiếu</button><span class="sp"></span><button class="btn" data-go="home">🏠 Trang đầu</button>`;}
+
+/* ================= ĐIỀU KHIỂN GAME · 2 chế độ: Nhiều đội / Cả lớp ================= */
+const KEY='ktpu-c5-dau-truong-v1';
+/* ---- Chế độ LÀM BÀI Ở NHÀ: link ?nha=<mã triển khai Apps Script>[&bai=<tên đợt>] ---- */
+const GAME='KTPU-C5 Đấu trường Thiết bị';
+const GS_URL='https://script.google.com/macros/s/AKfycbw9J5bx5x6UhP26abUrmKzSHryfJ8UZ1-g-JCUsqzXwZHKlVYzWUcN-g2oVEu8jRslsLw/exec';                       /* (tùy chọn) dán URL …/exec vào đây thì link chỉ cần ?nha=1 */
+
+const NHA_ID=(QP.get('nha')||'').trim(),NHA=!!NHA_ID,BAI=(QP.get('bai')||'').trim();
+const LOPB=(BAI.match(/^[^_]+_([^_]+)_C\d+$/)||[])[1]||'';   /* lớp lấy từ mã đợt HK_LỚP_Cx trong link giao bài */
+const GS=/^https:\/\/script\.google(usercontent)?\.com\//.test(NHA_ID)?NHA_ID:NHA_ID.length>20?`https://script.google.com/macros/s/${NHA_ID}/exec`:GS_URL;
+const SKEY=NHA?KEY+'-nha':KEY;
+const LET=['A','B','C','D','E','F','G','H'];
+const OC=['var(--oA)','var(--oB)','var(--oC)','var(--oD)'];
+const TCOL=['var(--t0)','var(--t1)','var(--t2)','var(--t3)'];
+const RK=['r1','r2','pn','r3','r4','r5'];
+const RD={r1:{n:1,name:'Khởi động',tab:'Khởi động',pts:10,rc:'#F26B3A',rc2:'#FFB13B'},
+  r2:{n:2,name:'Lật thẻ ghép đôi',tab:'Ghép đôi',pts:10,rc:'#8B5CF6',rc2:'#D946EF'},
+  pn:{n:3,name:'Phân nhóm',tab:'Phân nhóm',pts:10,rc:'#E0457B',rc2:'#FF8A4C'},
+  r3:{n:4,name:'Soi thiết bị',tab:'Soi ảnh',pts:20,rc:'#0EA5A0',rc2:'#22C55E'},
+  r4:{n:5,name:'Bộ phận bí ẩn',tab:'Bộ phận',pts:20,rc:'#2F7DE1',rc2:'#06B6D4'},
+  r5:{n:6,name:'Về đích',tab:'Về đích',pts:30,rc:'#E3A008',rc2:'#F26B3A'}};
+const VIEWS=['home','show',...RK,'kq','end','src'];
+const TDEF={r1:20,r2:20,pn:20,r3:30,r4:30,r5:60};
+const BK=r=>({r1:R1,r3:R3,r4:R4,r5:R5})[r];
+const $=s=>document.querySelector(s);
+const LOP=()=>S.mode==='lop';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const NB=s=>String(s).split(/(\\\(.*?\\\))/s).map((p,k)=>k%2?`<span class="nw">${p}</span>`:p.replace(/ ([=→⇄⇌+≠−<>]) /g,'\u00A0$1\u00A0').replace(/\S+(?:\u00A0[=→⇄⇌+≠−<>]\u00A0\S+)+/g,m=>`<span class="nw">${m}</span>`)).join('');
+function fit(){document.querySelectorAll('.card .f').forEach(el=>{el.style.fontSize='';let fs=parseFloat(getComputedStyle(el).fontSize),k=0;while(el.scrollHeight>el.clientHeight+1&&fs>10&&k++<20){fs-=1;el.style.fontSize=fs+'px';}});}
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+const half=r=>Math.round(RD[r].pts/2);
+
+function freshRound(r){return {r1:{i:0,q:{}},r3:{i:0,q:{}},r4:{i:0,q:{}},r5:{i:0,q:{},starUsed:[false,false,false,false]},
+  r2:{b:0,decks:{},m:{},turn:0,open:false},pn:{b:0,ord:{},m:{},turn:0,sel:null}}[r];}
+const fst=()=>({ok:0,bad:0,pts:0,run:0,best:0});
+function fresh(){const s={mode:'lop',teams:[0,1,2,3].map(i=>({name:'Đội '+(i+1)})),size:40,roster:[],called:[],view:'home',kq:'r1',mute:false,sc:{},st:{}};
+  RK.forEach(r=>{s[r]=freshRound(r);s.sc[r]=[0,0,0,0];s.st[r]=fst();});return s;}
+let S;try{S=JSON.parse(localStorage.getItem(SKEY))||fresh();}catch(_){S=fresh();}
+if(!S.pn||!S.st||!S.sc)S=fresh();
+if(NHA)S.mode='lop';
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(S));}catch(_){}}
+const HIST=[];function snap(){HIST.push(JSON.stringify(S));if(HIST.length>60)HIST.shift();}
+function undo(){if(!HIST.length)return;S=JSON.parse(HIST.pop());save();render();}
+const CR=()=>RK.includes(S.view)?S.view:(S.view==='kq'?S.kq:null);
+const tot=t=>RK.reduce((a,r)=>a+S.sc[r][t],0);
+
+/* ---------- âm thanh ---------- */
+let AC=null;
+function tone(fr,dur,type='sine',vol=.12,delay=0,to=null){if(S.mute)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+  const o=AC.createOscillator(),g=AC.createGain();o.type=type;const t=AC.currentTime+delay;o.frequency.setValueAtTime(fr,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+.02);}catch(_){}}
+const sGood=big=>{[523,659,784,1047].forEach((f,k)=>tone(f,.2,'triangle',.14,k*.075));tone(1568,.4,'sine',.07,.32);tone(2093,.3,'sine',.05,.42);
+  if(big)[784,988,1175,1568,1976].forEach((f,k)=>tone(f,.25,'square',.045,.55+k*.09));};
+const sBad=()=>{tone(330,.22,'sawtooth',.08,0,247);tone(247,.5,'sawtooth',.08,.22,140);tone(90,.35,'square',.05,.22);};
+const sTick=()=>tone(1200,.04,'square',.035);
+const sSel=()=>tone(660,.07,'triangle',.07,0,990);
+const sFlip=()=>tone(420,.09,'triangle',.07,0,700);
+const sWin=()=>{[[523,0],[523,.14],[523,.28],[698,.42],[880,.62],[784,.78],[1047,.98]].forEach(([f,d])=>tone(f,.28,'triangle',.13,d));[262,330,392].forEach(f=>tone(f,1.2,'sine',.05,.98));};
+const sEnd=()=>{tone(440,.2,'triangle');tone(440,.2,'triangle',.12,.3);tone(330,.5,'triangle',.12,.6);};
+
+/* ---------- hiệu ứng ---------- */
+const PAL=['#F26B3A','#FFB13B','#22C55E','#2F7DE1','#8B5CF6','#E0457B','#06B6D4','#FACC15'];
+const FX={parts:[],run:false};
+function confetti(x,y,n=120,pow=1){if(RM())return;n=Math.round(n*.5);pow*=.7;const c=$('#fxc');c.width=innerWidth;c.height=innerHeight;
+  for(let k=0;k<n;k++){const a=Math.random()*Math.PI*2,v=(4+Math.random()*10)*pow;
+    FX.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-7*pow,s:3+Math.random()*4,r:Math.random()*6,vr:(Math.random()-.5)*.35,c:pick(PAL),sh:k%3,life:0});}
+  if(!FX.run){FX.run=true;requestAnimationFrame(fxLoop);}}
+function fxLoop(){const c=$('#fxc'),g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);
+  FX.parts=FX.parts.filter(p=>p.y<c.height+40&&p.life<260);
+  FX.parts.forEach(p=>{p.life++;p.vy+=.32;p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.fillStyle=p.c;
+    if(p.sh===0)g.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);else if(p.sh===1){g.beginPath();g.arc(0,0,p.s/2.6,0,7);g.fill();}
+    else{g.beginPath();for(let i=0;i<5;i++){const a=i*1.2566-1.5708;g.lineTo(Math.cos(a)*p.s/1.6,Math.sin(a)*p.s/1.6);g.lineTo(Math.cos(a+.628)*p.s/3.4,Math.sin(a+.628)*p.s/3.4);}g.fill();}
+    g.restore();});
+  if(FX.parts.length)requestAnimationFrame(fxLoop);else{FX.run=false;g.clearRect(0,0,c.width,c.height);}}
+const PRAISE=[['🎉','Chính xác!'],['🌟','Tuyệt vời!'],['🚀','Xuất sắc!'],['🏆','Quá đỉnh!'],['💯','Chuẩn luôn!'],['👏','Hoan hô!']];
+const OOPS=[['🤔','Chưa đúng rồi!'],['😅','Suýt nữa thôi!'],['💡','Nghĩ thêm chút nhé!'],['🙈','Ối, chưa phải!']];
+let popT=null;
+function pop(kind,sub,big){const d=$('#pop'),[e,t]=kind==='ok'?pick(PRAISE):pick(OOPS);
+  d.className='pop '+kind+(big?' big':'');d.innerHTML=`<div class="pe">${e}</div><div class="pt">${t}</div>${sub?`<div class="ps">${sub}</div>`:''}`;
+  void d.offsetWidth;d.classList.add('go');const m=/\\\(/.test(sub||'');if(m)tset(d);clearTimeout(popT);popT=setTimeout(()=>d.classList.remove('go'),big||m?3200:1700);}
+function flash(kind){const f=$('#flash');f.className='flash '+kind;void f.offsetWidth;f.classList.add('go');}
+function shake(el){if(!el||RM())return;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');}
+function floatTxt(el,txt){if(!el)return;const r=el.getBoundingClientRect(),s=document.createElement('span');s.className='fpt';s.textContent=txt;
+  s.style.left=(r.left+r.width/2)+'px';s.style.top=(r.top+r.height/2)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),1400);}
+const ctr=el=>{const r=el?el.getBoundingClientRect():{left:innerWidth/2,top:innerHeight/2,width:0,height:0};return [r.left+r.width/2,r.top+r.height/2];};
+function good(el,sub,{big=false,pts=''}={}){sGood(big);const [x,y]=ctr(el);confetti(x,y,big?240:120,big?1.25:1);if(big)setTimeout(()=>confetti(innerWidth*.2,innerHeight*.35,90),250),setTimeout(()=>confetti(innerWidth*.8,innerHeight*.35,90),450);
+  pop('ok',sub,big);flash('ok');if(pts)floatTxt(el,pts);}
+function bad(el,sub){sBad();shake(el);pop('bad',sub);flash('bad');}
+function celebrate(){sWin();if(RM())return;[.15,.5,.85].forEach((x,k)=>setTimeout(()=>confetti(innerWidth*x,innerHeight*.3,140,1.3),k*280));}
+
+/* ---------- gọi sinh viên ngẫu nhiên ---------- */
+const RL=()=>Array.isArray(S.roster)?S.roster:[];
+function callSV(){const L=RL(),n=L.length||Math.max(1,+S.size||40);let pool=Array.from({length:n},(_,i)=>i+1).filter(x=>!S.called.includes(x));if(!pool.length){S.called=[];pool=Array.from({length:n},(_,i)=>i+1);}
+  const res=pick(pool),box=$('#call'),cn=box.querySelector('.cn'),cl=box.querySelector('.cl');box.hidden=false;box.classList.remove('done');box.classList.toggle('nm',!!L.length);
+  cl.textContent=L.length?'🎲 Mời bạn':'🎲 Mời sinh viên số';box.querySelector('.cs').textContent='Đang quay…';let k=0;
+  const cm=box.querySelector('.cm');const show=x=>{if(!L.length){cn.textContent=x;cm.textContent='';return;}const t=L[x-1],m=t.match(/^(?:\d{1,3}[.)]\s*)?(\d{5,})\s*[–-]?\s*(.+)$/);cn.textContent=m?m[2]:t;cm.textContent=m?'MSSV '+m[1]:'';};
+  const spin=setInterval(()=>{show(1+Math.floor(Math.random()*n));sTick();if(++k>=(RM()?1:22)){clearInterval(spin);show(res);box.classList.add('done');
+    S.called.push(res);save();box.querySelector('.cs').textContent=`${L.length?`STT ${res} · `:''}Đã gọi ${S.called.length}/${n} bạn · bấm vào đây để đóng`;sGood();confetti(innerWidth/2,innerHeight*.45,90);}},75);}
+function setRoster(txt){S.roster=txt.split(/\r?\n/).map(x=>x.replace(/\t+/g,' – ').replace(/\s+/g,' ').trim()).filter(Boolean);S.called=[];save();
+  const c=$('#rcount');if(c)c.textContent=S.roster.length?`${S.roster.length} sinh viên · gọi theo tên`:'Chưa có danh sách · gọi theo số thứ tự';const z=$('#size');if(z)z.disabled=!!S.roster.length;}
+
+/* ---------- MathJax ---------- */
+function tset(el){if(!window.__mjReady||!window.MathJax||!MathJax.typesetPromise)return Promise.resolve();
+  try{MathJax.typesetClear&&MathJax.typesetClear([el]);}catch(_){}return MathJax.typesetPromise([el]).catch(()=>{});}
+window.__typeset=()=>tset(document.body);
+
+/* ---------- đồng hồ ---------- */
+const TM={left:0,total:0,run:false,h:null};
+function tStart(sec){if(sec)TM.left=TM.total=sec;if(TM.left<=0)TM.left=TM.total;TM.run=true;clearInterval(TM.h);
+  TM.h=setInterval(()=>{TM.left--;if(TM.left<=0){TM.left=0;TM.run=false;clearInterval(TM.h);sEnd();}else if(TM.left<=5)tone(880,.06,'square',.04);paintTimer();},1000);paintTimer();}
+function tPause(){TM.run=false;clearInterval(TM.h);paintTimer();}
+function tReset(sec){tPause();TM.left=TM.total=sec;paintTimer();}
+function paintTimer(){const el=$('#tm');if(!el)return;const m=Math.floor(TM.left/60),s=TM.left%60;el.textContent=m+':'+String(s).padStart(2,'0');
+  el.classList.toggle('low',TM.left<=5&&TM.total>0);const b=$('#tmb');if(b)b.textContent=TM.run?'⏸ Tạm dừng':'⏱ Bắt đầu giờ';}
+const timerBtns=()=>`<span class="timer" id="tm"></span><button class="btn" id="tmb"></button>`;
+const callBtn=()=>LOP()&&!NHA?`<button class="btn call" id="callsv" title="Phím G">🎲 Gọi sinh viên</button>`:'';
+const undoBtn=()=>`<button class="btn" id="undo" ${HIST.length?'':'disabled'}>↶ Hoàn tác</button>`;
+
+/* ---------- khung chung ---------- */
+function renderTabs(){$('#tabs').innerHTML=VIEWS.filter(v=>v!=='kq').map(v=>{const d=RD[v];
+  return `<button data-go="${v}" ${S.view===v||(S.view==='kq'&&S.kq===v)?'aria-current="page"':''} style="--rc:${d?d.rc:'#FACC15'}">${d?`<i>${d.n}</i>${d.tab}`:({home:'🏠 Bắt đầu',show:'📽 Phòng chiếu',end:'🏁 Tổng kết',src:'📷 Nguồn ảnh'})[v]}</button>`;}).join('');}
+function renderBoard(bump=[]){const r=CR(),b=$('#board');
+  if(LOP()){if(!r){const T=RK.reduce((a,x)=>a+S.st[x].pts,0);b.innerHTML=`<div class="clsb"><span class="cl-l">Điểm cả lớp</span><b class="cl-s">${T}</b></div>`;return;}
+    const st=S.st[r];b.innerHTML=`<div class="clsb${bump.length?' bump':''}"><span class="cl-l">Điểm vòng ${RD[r].n}</span><b class="cl-s">${st.pts}</b>
+      <span class="okc" title="Số lần đúng">✔ ${st.ok}</span><span class="bdc" title="Số lần sai">✘ ${st.bad}</span>${st.run>=2?`<span class="run">🔥 ${st.run}</span>`:''}</div>`;return;}
+  const turnT=r==='r2'?S.r2.turn:r==='pn'?S.pn.turn:-1;
+  b.innerHTML=`<div class="board4">${S.teams.map((t,i)=>`<div class="team${i===turnT?' turn':''}${bump.includes(i)?' bump':''}" style="--tc:${TCOL[i]}">
+   ${S.r5.starUsed[i]?'':`<span class="star" title="Còn ngôi sao hy vọng">★</span>`}
+   <span class="nm">${esc(t.name)}</span><span class="sc">${r?S.sc[r][i]:tot(i)}</span>
+   <span class="sub">${r?`Tổng ${tot(i)}`:'Tổng điểm'}</span>
+   ${r?`<span class="adj"><button data-adj="${i}:-10" aria-label="Trừ 10 điểm ${esc(t.name)}">−10</button><button data-adj="${i}:10" aria-label="Cộng 10 điểm ${esc(t.name)}">+10</button></span>`:''}</div>`).join('')}</div>`;}
+function go(v){if(!VIEWS.includes(v))v='home';S.view=v;if(NHA&&RK.includes(v)){S.t0??={};S.t0[v]??=Date.now();}save();tReset(TDEF[CR()]||0);
+  if(location.hash.slice(1)!==v){try{history.replaceState(null,'','#'+v);}catch(_){location.hash=v;}}render();if(v==='kq'||v==='end')celebrate();}
+function render(){if(NHA&&!S.sv)return vLogin();renderTabs();renderBoard();const st=$('#stage'),r=CR();
+  st.style.setProperty('--rc',r?RD[r].rc:'#4B2A8C');st.style.setProperty('--rc2',r?RD[r].rc2:'#E0457B');
+  if(S.view!=='show'){clearTimeout(SH.h);cancelAnimationFrame(SH.raf);}
+  ({home:vHome,show:vShow,src:vSrc,r1:()=>vMC('r1'),r3:()=>vMC('r3'),r4:()=>vMC('r4'),r2:vMem,pn:vPN,r5:vFinal,kq:vKQ,end:vEnd}[S.view]||vHome)();
+  tset(st).then(fit);fit();paintTimer();}
+function head(r,cnt,done,total,rule){const d=RD[r];const pc=total?Math.round(100*done/total):0;
+  return `<div class="rhead"><span class="rnum">Vòng ${d.n}</span><h1>${d.name}</h1><span class="qcount">${cnt}</span>
+   <span class="prog" title="Tiến độ vòng"><i style="width:${pc}%"></i></span><span class="rule">${rule}</span></div>`;}
+
+/* ---------- Trang chủ ---------- */
+const DESC={r1:'Mô hình lý tưởng, phương pháp hoạt động, ưu – nhược điểm',r2:'Thiết bị – đặc điểm, bộ phận – chức năng, ưu – nhược',pn:'Gián đoạn hay liên tục? Cố định hay sôi? Lý tưởng hay thực?',r3:'Nhận diện thiết bị qua ảnh và video thật',r4:'Gọi tên bộ phận trên hoạt hình mặt cắt',r5:'Sắp thứ tự vận hành, tìm dòng mô tả sai'};
+const cntQ=r=>r==='r2'?R2.reduce((a,b)=>a+b.pairs.length,0):r==='pn'?PN.reduce((a,b)=>a+b.items.length,0):BK(r).length;
+function vHome(){const lop=LOP();
+  $('#stage').innerHTML=`<div class="home"><div class="hero"><h1>Đấu trường<br><span>Thiết bị phản ứng</span></h1>
+    <p>Sáu trò chơi về thiết bị phản ứng theo chương 5: bình khuấy, bình ống, tầng cố định, tầng sôi, tháp đệm, tháp mâm, tháp sủi bọt và thiết bị xúc tác sinh học, có ảnh và video thật. Mỗi vòng tính điểm riêng và có tổng kết đúng / sai.</p><p><button class="btn gold" data-go="show">📽 Phòng chiếu: xem từng thiết bị (≈ 30–45 s mỗi thiết bị)</button></p>
+    <div class="modes" role="group" aria-label="Chế độ chơi">
+     <button data-mode="lop" aria-pressed="${lop}"><span class="me">🙋</span><b>Cả lớp</b><span>Giáo viên gọi sinh viên phát biểu rồi bấm đáp án; hiệu ứng đúng / sai; điểm chung của lớp</span></button>
+     <button data-mode="thi" aria-pressed="${!lop}"><span class="me">🏁</span><b>Nhiều đội thi</b><span>4 đội giơ thẻ A–D hoặc giành quyền; trang cộng điểm từng đội theo từng vòng</span></button></div>
+    ${lop?`<div class="setup1"><label class="rost">Danh sách lớp (dán vào, mỗi dòng một sinh viên; dán thẳng từ Excel được)
+      <textarea id="roster" rows="5" placeholder="2001230001 Nguyễn Văn An&#10;2001230002 Trần Thị Bình&#10;…">${esc(RL().join('\n'))}</textarea></label>
+      <div class="rrow"><span id="rcount" class="hint">${RL().length?`${RL().length} sinh viên · gọi theo tên`:'Chưa có danh sách · gọi theo số thứ tự'}</span>
+      <label class="sz">hoặc sĩ số <input id="size" type="number" min="1" max="300" value="${S.size}" ${RL().length?'disabled':''}></label>
+      <button class="btn" id="recall">↻ Gọi lại từ đầu</button></div>
+      <p class="hint">Bấm <b>🎲 Gọi sinh viên</b> (phím G): trang quay tên (hoặc số thứ tự nếu chưa dán danh sách), không gọi trùng cho đến khi gọi hết lớp. Sinh viên trả lời, giáo viên bấm vào phương án sinh viên chọn (hoặc phím A–D).
+      Đúng ngay: +điểm đủ; đúng sau khi đã có bạn sai: +nửa số điểm. Đúng liên tiếp tạo <b>🔥 chuỗi</b>. Nút <b>💡 Gợi ý</b> mở câu hỏi gợi mở.</p></div>`
+     :`<div class="setup">${S.teams.map((t,i)=>`<label style="--tc:${TCOL[i]}">Đội ${i+1}<input data-tn="${i}" value="${esc(t.name)}" maxlength="22"></label>`).join('')}</div>
+      <p class="hint">Vòng 1, 4, 5: mỗi đội giơ thẻ, giáo viên bấm chữ cái từng đội rồi <b>Công bố</b>. Vòng 2, 3: các đội lần lượt chơi, đúng thì chơi tiếp, sai thì chuyển lượt. Vòng 6: giành quyền trả lời, có ngôi sao hy vọng.</p>
+      <div class="cards4">Thẻ mỗi đội: ${LET.slice(0,4).map((l,i)=>`<i style="--oc:${OC[i]}">${l}</i>`).join('')}</div>`}
+   </div>
+   <div class="rounds">${RK.map(r=>{const d=RD[r],st=S.st[r],has=st.ok+st.bad;return `<button class="rnd" data-go="${r}" style="--rc:${d.rc};--rc2:${d.rc2}"><span class="n">${d.n}</span>
+     <span><b>${d.name}</b><br><span>${DESC[r]}</span></span><span class="pts">${has?`✔ ${st.ok} · ✘ ${st.bad}`:`${cntQ(r)} ${r==='r2'?'cặp':'câu'} · ${d.pts} đ`}</span></button>`;}).join('')}
+    <div id="rst"></div></div></div>`;
+  $('#ctrl').innerHTML=`<button class="btn pri" data-go="r1">▶ Bắt đầu vòng 1</button>${callBtn()}<span class="sp"></span>
+   <button class="btn" id="mute">${S.mute?'🔇 Bật âm thanh':'🔊 Tắt âm thanh'}</button><button class="btn" id="resetAsk">Chơi lại tất cả</button>`;}
+
+/* ---------- Trắc nghiệm (vòng 1, 4, 5) ---------- */
+function qs(r,i){const o=S[r].q;if(!o[i])o[i]={pick:[null,null,null,null],tried:[],done:false,hint:false};return o[i];}
+function vMC(r){const B=BK(r),i=Math.min(S[r].i,B.length-1),it=B[i],q=qs(r,i),lop=LOP(),fin=q.done;
+  const opt=(o,k)=>{const right=fin&&k===it.a,wrong=q.tried.includes(k)||(fin&&!lop&&k!==it.a&&q.pick.includes(k));
+    const who=!lop&&fin?S.teams.map((t,ti)=>q.pick[ti]===k?`<span class="chip" style="--tc:${TCOL[ti]}">${esc(t.name)}</span>`:'').join(''):'';
+    const tag=lop?'button':'div';
+    return `<${tag} class="opt${right?' right':''}${wrong?' wrong':''}${fin&&!right&&!wrong?' dim':''}" ${lop?`data-ans="${k}" ${fin||q.tried.includes(k)?'disabled':''}`:''} style="--oc:${OC[k]}">
+      <span class="lt">${LET[k]}</span><span class="ot">${OPT(it,o,k)}</span><span class="who">${who}</span></${tag}>`;};
+  let body='';
+  if(r==='r3'||r==='r4')body=`<div class="v5"><div>${media(it.m,{cap:fin?undefined:'credit'})}</div>
+    <div><p class="ctx big">${it.ctx}</p><p class="qq big2">${it.qq}</p><div class="opts">${it.o.map(opt).join('')}</div></div></div>`;
+  else if(it.m)body=`<div class="v1m"><div class="m1">${media(it.m,{cap:'credit',labels:false})}</div><div><p class="qbox">${it.q}</p><div class="opts one">${it.o.map(opt).join('')}</div></div></div>`;
+  else body=`<p class="qbox">${it.q}</p>${sysBox(it)}<div class="opts">${it.o.map(opt).join('')}</div>`;
+  const done=Object.values(S[r].q).filter(x=>x.done).length;
+  const rule=lop?`Gọi sinh viên trả lời, bấm vào phương án bạn ấy chọn. Đúng ngay: +${RD[r].pts}; đúng sau lượt sai: +${half(r)}.`:`Mỗi đội giơ thẻ A–D; bấm chữ cái từng đội rồi Công bố. Đúng: +${RD[r].pts} điểm.`;
+  $('#stage').innerHTML=head(r,`Câu ${i+1}/${B.length}`,done,B.length,rule)+body+
+   (q.hint&&it.ask&&!fin?`<div class="why ask"><b class="h">💡 Gợi ý.</b> ${it.ask}</div>`:'')+
+   (fin?`<div class="why"><b class="h">Đáp án ${LET[it.a]}.</b> ${it.why}</div>`:'')+(fin&&it.meo?`<div class="why meo"><b class="h">🧠 Mẹo nhớ.</b> ${it.meo}</div>`:'')+
+   (lop?'':`<div class="picks">${S.teams.map((t,ti)=>`<div class="pk${fin&&q.pick[ti]!==null?(q.pick[ti]===it.a?' ok':' no'):''}" style="--tc:${TCOL[ti]}"><span class="tn">${esc(t.name)}</span>
+     ${it.o.map((_,k)=>`<button data-pick="${ti}:${k}" aria-pressed="${q.pick[ti]===k}" style="--oc:${OC[k]}" ${fin?'disabled':''} aria-label="${esc(t.name)} chọn ${LET[k]}">${LET[k]}</button>`).join('')}</div>`).join('')}</div>`);
+  $('#ctrl').innerHTML=`${timerBtns()}${callBtn()}${lop&&it.ask&&!fin?`<button class="btn" id="hint">💡 Gợi ý</button>`:''}<span class="sp"></span>
+   <button class="btn" data-nav="-1" ${i===0?'disabled':''}>‹ Câu trước</button>
+   <button class="btn gold" id="reveal" ${fin?'disabled':''}>${lop?'Xem đáp án':'Công bố'}</button>
+   <button class="btn pri" data-nav="1">${i===B.length-1?'Kết thúc vòng 🏁':'Câu tiếp ›'}</button>${undoBtn()}`;
+}
+function answer(k){const r=S.view;if(!['r1','r3','r4'].includes(r)||!LOP())return;const it=BK(r)[S[r].i],q=qs(r,S[r].i);if(q.done||q.tried.includes(k)||k>=it.o.length)return;snap();const st=S.st[r];
+  if(k===it.a){const first=!q.tried.length,p=first?RD[r].pts:half(r);q.done=true;st.ok++;st.pts+=p;if(first){st.run++;st.best=Math.max(st.best,st.run);}else st.run=0;
+    save();tPause();render();renderBoard([0]);const el=$(`[data-ans="${k}"]`);good(el,st.run>=3&&first?`🔥 Chuỗi ${st.run} câu đúng liên tiếp!`:(first?'Trả lời đúng ngay lần đầu':'Sửa sai thành công'),{big:first&&st.run>=3,pts:'+'+p});
+}
+  else{q.tried.push(k);st.bad++;st.run=0;save();render();bad($(`[data-ans="${k}"]`),'Mời bạn khác trả lời');}}
+function reveal(){const r=S.view;if(!['r1','r3','r4'].includes(r))return;const it=BK(r)[S[r].i],q=qs(r,S[r].i);if(q.done)return;snap();q.done=true;tPause();
+  if(LOP()){q.shown=true;S.st[r].run=0;save();render();return;}
+  const win=[];q.pick.forEach((p,t)=>{if(p===null)return;if(p===it.a){S.sc[r][t]+=RD[r].pts;win.push(t);S.st[r].ok++;}else S.st[r].bad++;});
+  save();render();renderBoard(win);const el=$('.opt.right');
+  if(win.length)good(el,win.map(t=>esc(S.teams[t].name)).join(', ')+` +${RD[r].pts}`,{big:win.length===4,pts:'+'+RD[r].pts});
+  else{sBad();pop('bad','Chưa đội nào đúng');flash('bad');}}
+
+/* ---------- đồ thị Levenspiel (hệ nhiều TBPU) ---------- */
+const fmt=(v,d)=>String(+(+v).toFixed(d)).replace('.',',');
+function levG(it,W,H,L,Rr,T,Bt){const A=it.ax,pw=W-L-Rr,ph=H-T-Bt;
+  return {pw,ph,X:x=>L+(x-A.x0)/(A.x1-A.x0)*pw,Y:y=>H-Bt-Math.min(y,A.y1)/A.y1*ph};}
+function crvF(fn,a,b,X,Y,n=90){const p=[];for(let k=0;k<=n;k++){const x=a+(b-a)*k/n;p.push([X(x),Y(fn(x))]);}return p;}
+function shp(it,sh,X,Y){const fn=sh.f2?it.f2:it.f;if(sh.k==='R'){const y=Y(fn(sh.h));return `M${X(sh.a)},${Y(0)} V${y} H${X(sh.b)} V${Y(0)} Z`;}
+  const p=crvF(fn,sh.a,sh.b,X,Y,60);return `M${X(sh.a)},${Y(0)} `+p.map(q=>'L'+q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')+` L${X(sh.b)},${Y(0)} Z`;}
+const HC={b:'#2E86AB',o:'#E07A1F',r:'#D9344A',g:'#1E9E5A'},ANG={b:45,o:-45,r:-45,g:0};
+function pat(id,c,ang){return `<pattern id="${id}" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(${ang})"><rect width="9" height="9" fill="${c}" fill-opacity=".16"/><line x1="0" y1="0" x2="0" y2="9" stroke="${c}" stroke-width="2.4"/></pattern>`;}
+const pdefs=pre=>Object.keys(HC).map(c=>pat(pre+c,HC[c],ANG[c])).join('');
+const shSVG=(it,sh,X,Y,pre,sw)=>{const c=sh.c||'b';return `<path d="${shp(it,sh,X,Y)}" fill="url(#${pre}${c})" stroke="${HC[c]}" stroke-width="${c==='o'?sw*1.3:sw}" ${c==='o'?'stroke-dasharray="9 6"':''}/>`;};
+function axes(W,H,L,Rr,T,Bt,sw){return `<line x1="${L}" y1="${H-Bt}" x2="${W-Rr}" y2="${H-Bt}" stroke="#13213A" stroke-width="${sw}"/><line x1="${L}" y1="${H-Bt}" x2="${L}" y2="${T}" stroke="#13213A" stroke-width="${sw}"/>
+   <path d="M${W-Rr},${H-Bt} l-${3*sw},-${2*sw} v${4*sw}z M${L},${T} l-${2*sw},${3*sw} h${4*sw}z" fill="#13213A"/>`;}
+const curves=(it,X,Y,n,sw)=>{let s=`<polyline points="${crvF(it.f,it.xmin||0,it.xmax,X,Y,n).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="#14325C" stroke-width="${sw}" stroke-linejoin="round"/>`;
+  if(it.f2)s+=`<polyline points="${crvF(it.f2,it.xmin||0,it.xmax,X,Y,n).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="#D9344A" stroke-width="${sw}" stroke-linejoin="round"/>`;return s;};
+function mini(it,g,k){const W=230,H=130,L=14,Rr=10,T=10,Bt=22,{X,Y}=levG(it,W,H,L,Rr,T,Bt),pre='m'+k,gs=Array.isArray(g)?g:[g];
+  return `<svg class="mini" viewBox="0 0 ${W} ${H}" role="img" aria-label="Phương án ${LET[k]}"><defs>${pdefs(pre)}</defs>
+   ${gs.map(sh=>shSVG(it,sh,X,Y,pre,2)).join('')}${axes(W,H,L,Rr,T,Bt,1.6)}${curves(it,X,Y,90,3)}
+   ${it.ax.xt.map(x=>`<text x="${X(x)}" y="${H-5}" font-size="12" text-anchor="middle" fill="#3A4A63">${fmt(x,it.ax.xf)}</text>`).join('')}</svg>`;}
+function drawLev(it,t){const svg=$('#plot');if(!svg)return;const W=600,H=340,L=60,Rr=18,T=16,Bt=40,A=it.ax,{X,Y,pw}=levG(it,W,H,L,Rr,T,Bt);
+  let s=`<defs>${pdefs('p')}<clipPath id="cpl"><rect x="${L}" y="0" width="${Math.max(0,pw*t).toFixed(1)}" height="${H}"/></clipPath></defs>`;
+  s+=(A.yt||[]).map(y=>`<line x1="${L}" x2="${W-Rr}" y1="${Y(y)}" y2="${Y(y)}" stroke="#DCE3EE" stroke-width="1"/><text x="${L-8}" y="${Y(y)+6}" font-size="17" text-anchor="end" fill="#3A4A63">${fmt(y,0)}</text>`).join('');
+  s+=A.xt.map(x=>`<text x="${X(x)}" y="${H-12}" font-size="17" text-anchor="middle" fill="#3A4A63">${fmt(x,A.xf)}</text>`).join('');
+  s+=(it.pre||[]).map(sh=>shSVG(it,sh,X,Y,'p',2.5)).join('');
+  if(t>0)s+=`<g clip-path="url(#cpl)">${it.shade.map(sh=>shSVG(it,sh,X,Y,'p',2.5)).join('')}</g>`;
+  s+=axes(W,H,L,Rr,T,Bt,2.5)+curves(it,X,Y,160,4);
+  if(it.f2){const xe=it.xmax-0.04;s+=`<text x="${X(xe)-8}" y="${Y(it.f(xe))-8}" font-size="20" font-weight="800" fill="#14325C" text-anchor="end">(1)</text><text x="${X(xe)+4}" y="${Y(it.f2(xe))+24}" font-size="20" font-weight="800" fill="#D9344A">(2)</text>`;}
+  s+=it.pts.map(x=>`<circle cx="${X(x).toFixed(1)}" cy="${Y(it.f(x)).toFixed(1)}" r="6" fill="#fff" stroke="#14325C" stroke-width="3"/>`).join('');
+  [].concat(it.guide??[]).forEach(g=>{const y=it.f(g);s+=`<path d="M${X(g)},${Y(0)} V${Y(y)} H${L}" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-dasharray="7 5"/><circle cx="${X(g)}" cy="${Y(y)}" r="6" fill="#7C3AED"/>`;});
+  if(t>=1&&it.leg){let x=L+20;s+=`<g font-size="18" font-weight="700">`+it.leg.map(([c,lb])=>{const g=`<rect x="${x}" y="${T+4}" width="22" height="16" fill="url(#p${c})" stroke="${HC[c]}" stroke-width="2.5" ${c==='o'?'stroke-dasharray="5 3"':''}/><text x="${x+28}" y="${T+18}" fill="#14325C">${lb}</text>`;x+=40+lb.length*10;return g;}).join('')+'</g>';}
+  svg.innerHTML=s;}
+function animPlot(it){const t0=performance.now(),D=1300;
+  const step=now=>{let t=RM()?1:Math.max(0,Math.min(1,(now-t0)/D));drawLev(it,t);if(t<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
+
+/* ---------- vẽ hệ thiết bị (CSTR có cánh khuấy, PFR dạng ống) ---------- */
+let SID=0;
+const lbl=t=>esc(t).replace(/([A-Za-zυτ])_([A-Za-z0-9\u00C0-\u024F\u1E00-\u1EFF]+)/g,'<tspan font-style="italic">$1</tspan><tspan baseline-shift="sub" font-size="72%">$2</tspan>');
+const tw=t=>String(t).replace(/_/g,'').length*8.6;
+function arrow(x1,x2,cy,t){return `<line x1="${x1}" y1="${cy}" x2="${x2-2}" y2="${cy}" stroke="#14325C" stroke-width="2.6" marker-end="url(#ah${SID})"/>`+(t?`<text x="${(x1+x2)/2}" y="${cy-10}" font-size="16" font-weight="600" text-anchor="middle" fill="#14325C">${lbl(t)}</text>`:'');}
+function unitK(x,cy,v){const w=92,t=cy-36,b=cy+42;
+  return {w,s:`<path d="M${x},${t} V${b-16} Q${x},${b} ${x+16},${b} H${x+w-16} Q${x+w},${b} ${x+w},${b-16} V${t}" fill="#fff" stroke="#14325C" stroke-width="2.6"/>
+   <path d="M${x+2},${cy-22} H${x+w-2} V${b-16} Q${x+w-2},${b-2} ${x+w-16},${b-2} H${x+16} Q${x+2},${b-2} ${x+2},${b-16} Z" fill="url(#lq${SID})"/>
+   <line x1="${x+w/2}" y1="${t-16}" x2="${x+w/2}" y2="${cy+22}" stroke="#14325C" stroke-width="3"/><rect x="${x+w/2-9}" y="${t-24}" width="18" height="10" rx="2" fill="#14325C"/>
+   <ellipse cx="${x+w/2-13}" cy="${cy+22}" rx="13" ry="5" fill="#14325C"/><ellipse cx="${x+w/2+13}" cy="${cy+22}" rx="13" ry="5" fill="#14325C"/>
+   ${v?`<text x="${x+w/2}" y="${b+20}" font-size="15" font-weight="700" text-anchor="middle" fill="#14325C">${lbl(v)}</text>`:''}`};}
+function unitO(x,cy,v){const w=140;
+  return {w,s:`<rect x="${x+6}" y="${cy-16}" width="${w-12}" height="32" rx="7" fill="url(#mt${SID})" stroke="#14325C" stroke-width="2.4"/>
+   <rect x="${x}" y="${cy-21}" width="9" height="42" rx="2" fill="#5B6B86" stroke="#14325C" stroke-width="1.6"/><rect x="${x+w-9}" y="${cy-21}" width="9" height="42" rx="2" fill="#5B6B86" stroke="#14325C" stroke-width="1.6"/>
+   ${v?`<text x="${x+w/2}" y="${cy+40}" font-size="15" font-weight="700" text-anchor="middle" fill="#14325C">${lbl(v)}</text>`:''}`};}
+function norm(a){const o=[];let need=true;a.forEach(e=>{if(typeof e==='string'){if(need){o.push(e);need=false;}else o[o.length-1]+=e;}else{if(need)o.push('');o.push(e);need=true;}});if(need)o.push('');return o;}
+function chainS(a,x0,cy){const q=norm(a);let x=x0,s='';q.forEach((e,i)=>{if(typeof e==='string'){const L=Math.max(i===0||i===q.length-1?50:44,tw(e)+18);s+=arrow(x,x+L,cy,e);x+=L;}else{const u=(e.k==='k'?unitK:unitO)(x,cy,e.v);s+=u.s;x+=u.w;}});return {s,w:x-x0};}
+function sysSVG(sp){SID++;let s='',W,H;
+  if(sp.par){const cy=136,d=70,Li=Math.max(50,tw(sp.i||'')+18),xs=6+Li,r1=chainS(sp.par[0],xs,cy-d),r2=chainS(sp.par[1],xs,cy+d),xe=xs+Math.max(r1.w,r2.w),Lo=Math.max(50,tw(sp.o||'')+18);
+    s=arrow(6,xs,cy,sp.i||'')+`<line x1="${xs}" y1="${cy-d}" x2="${xs}" y2="${cy+d}" stroke="#14325C" stroke-width="2.6"/>`+r1.s+r2.s
+     +[r1,r2].map((r,k)=>r.w<xe-xs?`<line x1="${xs+r.w}" y1="${cy+(k?d:-d)}" x2="${xe}" y2="${cy+(k?d:-d)}" stroke="#14325C" stroke-width="2.6"/>`:'').join('')
+     +`<line x1="${xe}" y1="${cy-d}" x2="${xe}" y2="${cy+d}" stroke="#14325C" stroke-width="2.6"/>`+arrow(xe,xe+Lo,cy,sp.o||'');W=xe+Lo+14;H=282;}
+  else{const r=chainS(sp.c||sp,6,62);s=r.s;W=r.w+14;H=134;}
+  return `<svg class="sysv${sp.par?' par':''}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Sơ đồ hệ thiết bị"><defs><marker id="ah${SID}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#14325C"/></marker>
+   <linearGradient id="lq${SID}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CD3F5"/><stop offset="1" stop-color="#3F8FD8"/></linearGradient>
+   <linearGradient id="mt${SID}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8EDF5"/><stop offset=".45" stop-color="#FFFFFF"/><stop offset="1" stop-color="#8F9BB3"/></linearGradient></defs>${s}</svg>`;}
+const sysBox=it=>it.sys?`<div class="sys">${it.sys.map(p=>`<div class="sysp">${p.t?`<b>${p.t}</b>`:''}${sysSVG(p.s)}</div>`).join('')}</div>`:'';
+const OPT=(it,o,k)=>typeof o==='string'?o:o.s?sysSVG(o.s):mini(it,o.g,k);
+const IT=x=>typeof x==='string'?NB(x):`<span class="pnd">${sysSVG(x.s)}<span>${x.t||''}</span></span>`;
+
+/* ---------- Vòng 2: lật thẻ, hai phía hai màu ---------- */
+function deck(b){if(!S.r2.decks[b]){const n=R2[b].pairs.length,sh=()=>{const a=Array.from({length:n},(_,i)=>i);for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+  S.r2.decks[b]={L:sh(),R:sh()};S.r2.m[b]={};save();}return S.r2.decks[b];}
+let UP=[],LOCK=false;
+function vMem(){const b=S.r2.b,B=R2[b],d=deck(b),m=S.r2.m[b]||{},lop=LOP();UP=[];LOCK=false;
+  const done=R2.reduce((a,_,k)=>a+Object.keys(S.r2.m[k]||{}).length,0),all=cntQ('r2'),tags=B.tags||['Trường hợp','Phương trình'];
+  const card=(side,pos,p)=>{const own=m[p],isDone=own!==undefined,txt=B.pairs[p][side==='L'?0:1],lab=side==='L'?pos+1:LET[pos];
+    return `<button class="card s${side}${isDone||S.r2.open?' up':''}${isDone?' done':''}" data-card="${side}:${pos}" ${isDone&&!lop?`data-team="${esc(S.teams[own].name)}" style="--tc:${TCOL[own]}"`:''} aria-label="Thẻ ${lab}">
+     <span class="in"><span class="b">${lab}</span><span class="f${side==='L'&&B.pairs[p][2]?' hasth':''}"><span class="tag">${lab}</span>${side==='L'?thumb(B.pairs[p][2]):''}<span>${NB(txt)}</span></span></span></button>`;};
+  const rule=lop?`Gọi sinh viên ghép một thẻ cam với một thẻ xanh (ví dụ “3 – E”) và giải thích. Đúng: +${RD.r2.pts}.`:`Đội đến lượt gọi một thẻ cam và một thẻ xanh. Đúng: +${RD.r2.pts} và chơi tiếp; sai thì chuyển lượt. Đang đến lượt: <b style="color:${TCOL[S.r2.turn]}">${esc(S.teams[S.r2.turn].name)}</b>`;
+  $('#stage').innerHTML=head('r2',`${B.name} · ${Object.keys(m).length}/${B.pairs.length} cặp`,done,all,rule)+
+   (Object.keys(m).length===B.pairs.length?`<div class="banner ok">🎊 Đã ghép xong ${B.name}!</div>`:'')+
+   `<div class="mem2"><div class="side sL"><h3>🟧 ${tags[0]}</h3><div class="grid">${d.L.map((p,pos)=>card('L',pos,p)).join('')}</div></div>
+    <div class="side sR"><h3>🟦 ${tags[1]}</h3><div class="grid">${d.R.map((p,pos)=>card('R',pos,p)).join('')}</div></div></div>`;
+  $('#ctrl').innerHTML=`${timerBtns()}${callBtn()}<span class="hint">Bảng:</span>${R2.map((x,k)=>`<button class="btn${k===b?' pri':''}" data-board="${k}">${k+1}</button>`).join('')}
+   ${lop?'':`<button class="btn" id="turn">Chuyển lượt</button>`}<button class="btn" id="openall">${S.r2.open?'Úp thẻ lại':'Mở tất cả'}</button>
+   <span class="sp"></span><button class="btn" id="reshuf">Xáo lại</button>${undoBtn()}<button class="btn pri" id="endr">Kết thúc vòng 🏁</button>`;}
+function flip(key){if(LOCK||S.r2.open)return;const [side,pos]=key.split(':'),b=S.r2.b,d=deck(b),p=d[side][+pos],m=S.r2.m[b];if(m[p]!==undefined)return;
+  const el=document.querySelector(`[data-card="${key}"]`);const same=UP.findIndex(u=>u.side===side);
+  if(same>=0){const old=UP[same];if(old.key===key)return;document.querySelector(`[data-card="${old.key}"]`)?.classList.remove('up');UP.splice(same,1);}
+  el.classList.add('up');sFlip();UP.push({side,p,key});if(UP.length<2)return;
+  const [a,c]=UP,els=UP.map(u=>document.querySelector(`[data-card="${u.key}"]`)),lop=LOP(),st=S.st.r2;snap();
+  if(a.p===c.p){m[a.p]=S.r2.turn;st.ok++;if(lop){st.pts+=RD.r2.pts;st.run++;st.best=Math.max(st.best,st.run);}else S.sc.r2[S.r2.turn]+=RD.r2.pts;
+    els.forEach(e=>e.classList.add('done','pulse'));save();renderBoard([S.r2.turn]);
+    good(els[1],(lop?(st.run>=3?`🔥 Chuỗi ${st.run} cặp đúng!`:'Ghép đúng một cặp'):`${esc(S.teams[S.r2.turn].name)} +${RD.r2.pts}`)+`<div class="pf">${R2[b].pairs[a.p][1]}</div>${thumb(R2[b].pairs[a.p][2],true)}`,{big:lop&&st.run>=3,pts:'+'+RD.r2.pts});
+    UP=[];setTimeout(render,1400);}
+  else{LOCK=true;st.bad++;st.run=0;els.forEach(e=>e.classList.add('miss'));bad(els[1],lop?'Mời bạn khác thử':'Chuyển lượt cho đội sau');
+    if(!lop)S.r2.turn=(S.r2.turn+1)%4;save();renderBoard();
+    setTimeout(()=>{els.forEach(e=>e.classList.remove('up','miss'));UP=[];LOCK=false;render();},1900);}}
+
+/* ---------- Vòng 3: Phân nhóm ---------- */
+function pnOrd(b){if(!S.pn.ord[b]){const a=PN[b].items.map((_,i)=>i);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}S.pn.ord[b]=a;S.pn.m[b]={};save();}return S.pn.ord[b];}
+function vPN(){const b=S.pn.b,B=PN[b],ord=pnOrd(b),m=S.pn.m[b]||{},lop=LOP();
+  const done=PN.reduce((a,_,k)=>a+Object.keys(S.pn.m[k]||{}).length,0),left=ord.filter(i=>m[i]===undefined);
+  const placed=g=>ord.filter(i=>m[i]!==undefined&&B.items[i][1]===g).map(i=>`<span class="placed"><span>${IT(B.items[i][0])}</span>${!lop?`<span class="chip" style="--tc:${TCOL[m[i]]}">${esc(S.teams[m[i]].name)}</span>`:''}</span>`).join('');
+  const bin=g=>`<button class="bin b${g}" data-bin="${g}" ${S.pn.sel===null?'aria-disabled="true"':''}><span class="bh">${B.groups[g]}</span>${B.gm?`<span class="bm">${thumb(B.gm[g],true)}</span>`:''}<span class="drop">${S.pn.sel===null?'':'⬇ Xếp vào đây'}</span>${placed(g)}</button>`;
+  const rule=lop?`Gọi sinh viên: chọn một thẻ ở giữa, rồi bấm vào nhóm bạn ấy nói. Đúng: +${RD.pn.pts}.`:`Đội đến lượt chọn thẻ và nhóm. Đúng: +${RD.pn.pts} và chơi tiếp; sai thì chuyển lượt. Đang đến lượt: <b style="color:${TCOL[S.pn.turn]}">${esc(S.teams[S.pn.turn].name)}</b>`;
+  $('#stage').innerHTML=head('pn',`Bảng ${b+1}/${PN.length} · ${Object.keys(m).length}/${B.items.length} thẻ`,done,cntQ('pn'),rule)+
+   `<p class="qbox sm pnq">${B.name}</p><div class="pnw">${bin(0)}
+    <div class="pile${B.items.some(x=>typeof x[0]!=='string')?' two':''}">${left.length?left.map(i=>`<button class="itm${S.pn.sel===i?' sel':''}" data-itm="${i}">${IT(B.items[i][0])}</button>`).join(''):`<div class="banner ok">🎊 Đã xếp xong bảng ${b+1}!</div>`}</div>
+    ${bin(1)}</div>${S.pn.last&&S.pn.last.b===b?(()=>{const L=B.items[S.pn.last.i];return `<div class="why"><b class="h">✔ ${typeof L[0]==='string'?NB(L[0]):L[0].t} → ${B.groups[L[1]]}.</b> ${L[2]||''}</div>`;})():''}`;
+  $('#ctrl').innerHTML=`${timerBtns()}${callBtn()}<span class="hint">Bảng:</span>${PN.map((x,k)=>`<button class="btn${k===b?' pri':''}" data-pnb="${k}">${k+1}</button>`).join('')}
+   ${lop?'':`<button class="btn" id="pnturn">Chuyển lượt</button>`}<span class="sp"></span><button class="btn" id="pnshuf">Xáo lại</button>${undoBtn()}<button class="btn pri" id="endr">Kết thúc vòng 🏁</button>`;}
+function pnDrop(g){const b=S.pn.b,i=S.pn.sel;if(i===null){const e=$('.pile');shake(e);tone(300,.12,'triangle',.06);return;}
+  const it=PN[b].items[i],lop=LOP(),st=S.st.pn;snap();
+  if(it[1]===g){S.pn.m[b][i]=S.pn.turn;S.pn.sel=null;st.ok++;if(lop){st.pts+=RD.pn.pts;st.run++;st.best=Math.max(st.best,st.run);}else S.sc.pn[S.pn.turn]+=RD.pn.pts;
+    S.pn.last={b,i};save();render();renderBoard([S.pn.turn]);good($(`[data-bin="${g}"]`),(lop&&st.run>=3?`🔥 Chuỗi ${st.run}!<br>`:'')+(it[2]||''),{big:lop&&st.run>=3,pts:'+'+RD.pn.pts});}
+  else{st.bad++;st.run=0;if(!lop)S.pn.turn=(S.pn.turn+1)%4;S.pn.sel=null;save();render();bad($(`[data-itm="${i}"]`),lop?'Mời bạn khác thử':'Chuyển lượt cho đội sau');}}
+
+/* ---------- Vòng 6: Về đích ---------- */
+function q5(i){const o=S.r5.q;if(!o[i]){const it=R5[i];let ord=null;if(it.type==='order'){ord=it.steps.map((_,k)=>k);
+   do{for(let a=ord.length-1;a>0;a--){const j=Math.floor(Math.random()*(a+1));[ord[a],ord[j]]=[ord[j],ord[a]];}}while(ord.every((v,k)=>v===k));}
+  o[i]={ord,buzz:null,star:null,picks:[],res:null,tried:[],rev:false,wl:[],fails:0};}return o[i];}
+function vFinal(){const i=Math.min(S.r5.i,R5.length-1),it=R5[i],q=q5(i),lop=LOP(),busy=q.res==='ok'||q.rev,active=lop||q.buzz!==null;
+  const starRow=S.teams.map((t,ti)=>{const used=S.r5.starUsed[ti]&&q.star!==ti;return `<button data-star="${ti}" aria-pressed="${q.star===ti}" ${used||busy||q.tried.length?'disabled':''} style="--tc:${TCOL[ti]}">★ ${esc(t.name)}</button>`;}).join('');
+  const buzzRow=S.teams.map((t,ti)=>`<button data-buzz="${ti}" aria-pressed="${q.buzz===ti}" class="${q.tried.includes(ti)?'tried':''}" ${q.tried.includes(ti)||busy?'disabled':''} style="--tc:${TCOL[ti]}">${esc(t.name)}</button>`).join('');
+  let body='';
+  if(it.type==='order'){const showOK=busy;
+    body=`<p class="hint">${lop?'Gọi sinh viên đọc thứ tự các chữ cái; giáo viên bấm lần lượt theo lời bạn ấy.':'Đội giành quyền đọc thứ tự các chữ cái; giáo viên bấm lần lượt.'} Bấm đủ ${it.steps.length} bước thì trang tự kiểm tra.</p>
+     <div class="steps">${(showOK?it.steps.map((_,k)=>k):q.ord).map((sk,pos)=>{const n=q.picks.indexOf(sk),lt=LET[q.ord.indexOf(sk)];
+      return `<button class="step${showOK?' ok':''}${n>=0&&!showOK?' on':''}" data-step="${sk}" ${!active||busy?'disabled':''} style="--oc:${PAL[q.ord.indexOf(sk)%PAL.length]}"><span class="lt">${showOK?(pos+1):lt}</span><span>${it.steps[sk]}</span>${!showOK&&n>=0?`<span class="no">${n+1}</span>`:''}${showOK?`<span class="no gr">${lt}</span>`:''}</button>`;}).join('')}</div>`;}
+  else{body=`<p class="hint">${lop?'Gọi sinh viên chỉ ra dòng sai đầu tiên; giáo viên bấm vào dòng đó, sau đó bạn ấy nêu cách sửa.':'Đội giành quyền chỉ ra số thứ tự dòng sai đầu tiên; giáo viên bấm vào dòng đó.'}</p>
+     <div class="steps">${it.lines.map((ln,k)=>`<button class="step ln${busy&&k===it.bad?' badl':''}${q.wl.includes(k)?' wl':''}" data-line="${k}" ${!active||busy||q.wl.includes(k)?'disabled':''}><span class="lt">${k+1}</span><span>${ln}</span></button>`).join('')}</div>
+     ${busy?`<div class="why"><b class="h">Sửa dòng ${it.bad+1}:</b> ${it.fix}</div>`:''}`;}
+  const ban=lop?'':q.res==='ok'?`<div class="banner ok">🏆 ${esc(S.teams[q.last].name)} ${q.lastPts>0?'+':''}${q.lastPts} điểm.</div>`
+    :q.res==='bad'?`<div class="banner bad">${esc(S.teams[q.last].name)} ${q.lastPts} điểm. Đội khác có thể giành quyền trả lời (+${RD.r5.pts/2|0}).</div>`:'';
+  const rule=lop?`${esc(it.title)}. Đúng ngay: +${RD.r5.pts}; đúng sau lượt sai: +${half('r5')}.`:`${esc(it.title)}. Đúng: +${RD.r5.pts}; sai: −10. Ngôi sao hy vọng (mỗi đội một lần): đúng ×2, sai −${RD.r5.pts}. Giành quyền sau khi đội khác sai: +${half('r5')}.`;
+  const done=Object.values(S.r5.q).filter(x=>x.res==='ok'||x.rev).length;
+  const [k5,...q5t]=it.title.split(': '),qtxt=q5t.join(': ');
+  const qc=`<div class="qfin ${it.type}"><span class="qk">${it.type==='order'?'🔢 Sắp thứ tự':'🔍 Tìm dòng sai'}</span><p>${qtxt.charAt(0).toUpperCase()+qtxt.slice(1)}</p></div>`;
+  $('#stage').innerHTML=head('r5',`Câu ${i+1}/${R5.length}`,done,R5.length,rule)+(lop?'':`<div class="buzz"><span class="hint">Ngôi sao:</span>${starRow}</div><div class="buzz"><span class="hint">Đội trả lời:</span>${buzzRow}</div>`)+ban+
+   `<div class="v6"><div>${qc}${body}</div>${it.m?`<div class="m6">${media(it.m,{cap:'credit',labels:false})}</div>`:''}</div>`;
+  $('#ctrl').innerHTML=`${timerBtns()}${callBtn()}<span class="sp"></span>
+   <button class="btn" data-nav="-1" ${i===0?'disabled':''}>‹ Câu trước</button><button class="btn" id="clr" ${busy||!q.picks.length?'disabled':''}>Xóa thứ tự đang bấm</button>
+   <button class="btn gold" id="show5" ${busy?'disabled':''}>Xem đáp án</button>
+   <button class="btn pri" data-nav="1">${i===R5.length-1?'Kết thúc vòng 🏁':'Câu tiếp ›'}</button>${undoBtn()}`;}
+function judge5(ok,sel){const i=S.r5.i,q=q5(i),t=q.buzz,st=S.st.r5;snap();
+  if(LOP()){if(ok){const first=!q.fails,p=first?RD.r5.pts:half('r5');q.res='ok';st.ok++;st.pts+=p;if(first){st.run++;st.best=Math.max(st.best,st.run);}else st.run=0;tPause();save();render();renderBoard([0]);good($('.steps'),first?'Đúng ngay lần đầu':'Sửa sai thành công',{big:true,pts:'+'+p});}
+    else{q.fails++;st.bad++;st.run=0;q.picks=[];if(sel!==undefined)q.wl.push(sel);save();render();bad(sel!==undefined?$(`[data-line="${sel}"]`):$('.steps'),'Mời bạn khác thử');}return;}
+  const first=q.tried.length===0,star=q.star===t&&first;
+  let d=ok?(first?RD.r5.pts:half('r5'))*(star?2:1):(first?(star?-RD.r5.pts:-10):0);
+  if(star)S.r5.starUsed[t]=true;S.sc.r5[t]+=d;ok?st.ok++:st.bad++;q.last=t;q.lastPts=d;
+  if(ok){q.res='ok';tPause();save();render();renderBoard([t]);good($('.steps'),`${esc(S.teams[t].name)} ${d>0?'+':''}${d}`,{big:star,pts:(d>0?'+':'')+d});}
+  else{q.res='bad';q.tried.push(t);q.buzz=null;q.picks=[];save();render();renderBoard([t]);bad($('.steps'),`${esc(S.teams[t].name)} ${d}`);}}
+
+/* ---------- Tổng kết từng vòng ---------- */
+function doneCnt(r){if(r==='r2')return R2.reduce((a,_,k)=>a+Object.keys(S.r2.m[k]||{}).length,0);if(r==='pn')return PN.reduce((a,_,k)=>a+Object.keys(S.pn.m[k]||{}).length,0);
+  if(r==='r5')return Object.values(S.r5.q).filter(x=>x.res==='ok'||x.rev).length;return Object.values(S[r].q).filter(x=>x.done).length;}
+const acc=st=>st.ok+st.bad?Math.round(100*st.ok/(st.ok+st.bad)):0;
+const stars=st=>{const a=acc(st);return st.ok+st.bad?(a>=80?3:a>=60?2:1):0;};
+function vKQ(){const r=S.kq,d=RD[r],st=S.st[r],lop=LOP(),n=stars(st),nx=RK[RK.indexOf(r)+1];
+  const ttl=st.ok+st.bad;
+  const pod=lop?'':`<div class="pod">${S.teams.map((t,i)=>({...t,i,s:S.sc[r][i]})).sort((a,b)=>b.s-a.s).map((t,k)=>`<div class="col" style="--tc:${TCOL[t.i]};--d:${k*.15}s"><div class="rk">${['🥇','🥈','🥉','🎖️'][k]}</div><div class="nm">${esc(t.name)}</div><div class="bar" style="height:${Math.max(60,Math.round(220*Math.max(t.s,0)/Math.max(1,...S.sc[r])))}px">${t.s}</div></div>`).join('')}</div>`;
+  $('#stage').innerHTML=`<div class="rhead"><span class="rnum">Vòng ${d.n}</span><h1>Tổng kết: ${d.name}</h1></div>
+   <div class="kq"><div class="stars">${[0,1,2].map(k=>`<span class="${k<n?'on':''}" style="--d:${k*.25}s">★</span>`).join('')}</div>
+    <p class="kmsg">${!ttl?'Vòng này chưa có lượt trả lời nào.':n===3?'Cả lớp nắm rất chắc phần này!':n===2?'Khá tốt, còn vài chỗ cần xem lại.':'Phần này cần giảng lại.'}</p>
+    <div class="stats">${lop?`<div class="t-pts"><b>${st.pts}</b><span>điểm của lớp</span></div>`:''}<div class="t-ok"><b>${st.ok}</b><span>lần trả lời đúng</span></div><div class="t-bad"><b>${st.bad}</b><span>lần trả lời sai</span></div>
+     <div><b>${acc(st)} %</b><span>tỉ lệ đúng</span></div><div><b>${doneCnt(r)}/${cntQ(r)}</b><span>${r==='r2'?'cặp':'câu'} đã hoàn thành</span></div>${lop?`<div><b>🔥 ${st.best}</b><span>chuỗi đúng dài nhất</span></div>`:''}</div>
+    <div class="ratio"><i style="width:${acc(st)}%"></i></div>${pod}</div>`;
+  $('#ctrl').innerHTML=`<button class="btn" data-go="${r}">‹ Quay lại vòng ${d.n}</button><button class="btn" id="replay">↻ Chơi lại vòng này</button><span class="sp"></span>
+   <button class="btn" data-go="end">🏁 Tổng kết chung</button>${nx?`<button class="btn pri" data-go="${nx}">Sang vòng ${RD[nx].n} ›</button>`:''}`;}
+function vEnd(){const lop=LOP();
+  const rows=RK.map(r=>{const st=S.st[r],d=RD[r];return `<tr><td><span class="dot" style="--rc:${d.rc}">${d.n}</span> ${d.name}</td><td class="okc">${st.ok}</td><td class="bdc">${st.bad}</td><td>${acc(st)} %</td><td class="stx">${'★'.repeat(stars(st))}<span>${'★'.repeat(3-stars(st))}</span></td>
+    ${lop?`<td><b>${st.pts}</b></td>`:S.teams.map((_,t)=>`<td>${S.sc[r][t]}</td>`).join('')}</tr>`;}).join('');
+  const T=RK.reduce((a,r)=>({ok:a.ok+S.st[r].ok,bad:a.bad+S.st[r].bad,pts:a.pts+S.st[r].pts}),{ok:0,bad:0,pts:0});
+  const redo=[];['r1','r3','r4'].forEach(r=>Object.entries(S[r].q).forEach(([i,q])=>{const it=BK(r)[i];if(!it)return;const w=lop?q.tried.length:q.pick.filter(p=>p!==null&&p!==it.a).length;if(w||q.shown)redo.push({r,i:+i,w,txt:r==='r1'?it.q:it.ctx+' '+it.qq});}));
+  Object.entries(S.r5.q).forEach(([i,q])=>{const w=lop?q.fails:q.tried.length;if(w||(q.rev&&q.res!=='ok'))redo.push({r:'r5',i:+i,w,txt:esc(R5[i].title)});});
+  redo.sort((a,b)=>b.w-a.w);
+  const rk=S.teams.map((t,i)=>({...t,i,s:tot(i)})).sort((a,b)=>b.s-a.s);
+  $('#stage').innerHTML=`<div class="rhead"><span class="rnum">Kết thúc</span><h1>${lop?'Tổng kết cả lớp':'Bảng vàng Đấu trường Thiết bị'}</h1></div>
+   ${lop?`<div class="stats"><div class="t-pts"><b>${T.pts}</b><span>tổng điểm của lớp</span></div><div class="t-ok"><b>${T.ok}</b><span>lần đúng</span></div><div class="t-bad"><b>${T.bad}</b><span>lần sai</span></div><div><b>${acc(T)} %</b><span>tỉ lệ đúng</span></div></div>`
+    :`<div class="pod">${rk.map((t,k)=>`<div class="col" style="--tc:${TCOL[t.i]};--d:${k*.15}s"><div class="rk">${['🥇','🥈','🥉','🎖️'][k]}</div><div class="nm">${esc(t.name)}</div><div class="bar" style="height:${Math.max(60,Math.round(220*Math.max(t.s,0)/Math.max(1,...rk.map(x=>x.s))))}px">${t.s}</div></div>`).join('')}</div>`}
+   <div class="tblw"><table class="tbl"><thead><tr><th>Vòng</th><th>✔ Đúng</th><th>✘ Sai</th><th>Tỉ lệ</th><th>Sao</th>${lop?'<th>Điểm</th>':S.teams.map((t,i)=>`<th style="color:${TCOL[i]}">${esc(t.name)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody>
+    <tfoot><tr><td>Tổng</td><td class="okc">${T.ok}</td><td class="bdc">${T.bad}</td><td>${acc(T)} %</td><td></td>${lop?`<td><b>${T.pts}</b></td>`:S.teams.map((_,i)=>`<td><b>${tot(i)}</b></td>`).join('')}</tr></tfoot></table></div>
+   ${redo.length?`<h2 class="sumh">Câu nên giảng lại (nhiều lần sai xếp trước)</h2><div class="sum">${redo.slice(0,8).map(x=>`<button class="srow" data-jump="${x.r}:${x.i}"><span class="sv">Vòng ${RD[x.r].n} · câu ${x.i+1}</span><span class="st">${x.txt}</span><span class="sw">${x.w?`${x.w} lần sai`:'chưa ai đúng'}</span></button>`).join('')}</div>`:''}`;
+  $('#ctrl').innerHTML=`<button class="btn" data-go="home">🏠 Về trang đầu</button><span class="sp"></span><button class="btn" id="resetAsk">Chơi lại tất cả</button>`;}
+
+/* ---------- sự kiện ---------- */
+function nav(n){const r=S.view,L=BK(r).length,ni=S[r].i+n;if(ni>=L){S.kq=r;return go('kq');}if(ni<0)return;S[r].i=ni;save();tReset(TDEF[r]);render();}
+document.addEventListener('click',e=>{const call=e.target.closest('#call');if(call){if(call.classList.contains('done'))call.hidden=true;return;}
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.go)return go(d.go);
+  if(d.mode){if(d.mode===S.mode)return;const any=RK.some(r=>S.st[r].ok+S.st[r].bad||S.sc[r].some(x=>x));
+    if(any&&!d.force){$('#cf')?.remove();($('#rst')||$('#stage')).insertAdjacentHTML('afterbegin',`<div class="confirm" id="cf">Đổi chế độ sẽ xóa điểm và tiến độ đang có. <button class="btn pri" data-mode="${d.mode}" data-force="1">Đổi và chơi mới</button><button class="btn" id="resetNo">Giữ chế độ cũ</button></div>`);return;}
+    const keep={teams:S.teams,size:S.size,roster:S.roster,mute:S.mute};S=fresh();Object.assign(S,keep);S.mode=d.mode;HIST.length=0;save();render();return;}
+  if(d.dev!==undefined){SH.dev=+d.dev;SH.sc=0;SH.el=0;SH.play=true;render();return;}
+  if(d.sc!==undefined){SH.sc=+d.sc;SH.el=0;render();return;}
+  if(b.id==='shPlay'){SH.play=!SH.play;if(SH.play)shRun();else{document.querySelectorAll('#scene video').forEach(v=>v.pause());document.querySelectorAll('#scene .kbi').forEach(e=>e.style.animationPlayState='paused');}b.textContent=SH.play?'⏸ Tạm dừng':'▶ Chạy';return;}
+  if(b.id==='shNext')return shGo(1);
+  if(b.id==='shPrev')return shGo(-1);
+  if(d.jump){const [r,i]=d.jump.split(':');S[r].i=+i;return go(r);}
+  if(b.id==='callsv')return callSV();
+  if(b.id==='recall'){S.called=[];save();b.textContent='✓ Đã làm mới';setTimeout(()=>{b.textContent='↻ Gọi lại từ đầu';},1200);return;}
+  if(d.adj){snap();const [t,v]=d.adj.split(':').map(Number);S.sc[CR()][t]+=v;save();renderBoard([t]);return;}
+  if(b.id==='undo')return undo();
+  if(b.id==='tmb'){TM.run?tPause():tStart(TM.left>0?0:TDEF[CR()]);return;}
+  if(b.id==='mute'){S.mute=!S.mute;save();b.textContent=S.mute?'🔇 Bật âm thanh':'🔊 Tắt âm thanh';return;}
+  if(b.id==='resetAsk'){const box=$('#rst')||$('#stage');box.insertAdjacentHTML('afterbegin',`<div class="confirm" id="cf">Xóa toàn bộ điểm và tiến độ của cả 6 vòng? <button class="btn pri" id="resetYes">Xóa và chơi lại</button><button class="btn" id="resetNo">Giữ nguyên</button></div>`);return;}
+  if(b.id==='resetNo'){$('#cf')?.remove();return;}
+  if(b.id==='resetYes'){const keep={teams:S.teams,mode:S.mode,size:S.size,roster:S.roster,mute:S.mute,sv:S.sv,sent:S.sent,gq:S.gq};S=fresh();Object.assign(S,keep);HIST.length=0;save();go('home');return;}
+  if(b.id==='replay'){snap();const r=S.kq;S[r]=freshRound(r);S.st[r]=fst();S.sc[r]=[0,0,0,0];if(r==='r5')S.r5.starUsed=[false,false,false,false];save();go(r);return;}
+  if(b.id==='endr'){S.kq=S.view;return go('kq');}
+  if(d.ans!==undefined)return answer(+d.ans);
+  if(b.id==='hint'){const r=S.view,q=qs(r,S[r].i);q.hint=true;save();render();tone(988,.12,'sine',.07);return;}
+  if(d.pick){const [t,k]=d.pick.split(':').map(Number),r=S.view,q=qs(r,S[r].i);if(q.done)return;q.pick[t]=q.pick[t]===k?null:k;save();sSel();
+    b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b&&q.pick[t]===k));return;}
+  if(b.id==='reveal')return reveal();
+  if(d.nav){const n=+d.nav;if(S.view==='r5'){const L=R5.length,ni=S.r5.i+n;if(ni>=L){S.kq='r5';return go('kq');}if(ni<0)return;S.r5.i=ni;save();tReset(TDEF.r5);render();return;}return nav(n);}
+  if(d.card!==undefined)return flip(d.card);
+  if(d.board!==undefined){S.r2.b=+d.board;save();render();return;}
+  if(b.id==='turn'){S.r2.turn=(S.r2.turn+1)%4;save();render();return;}
+  if(b.id==='openall'){S.r2.open=!S.r2.open;save();render();return;}
+  if(b.id==='reshuf'){delete S.r2.decks[S.r2.b];save();render();return;}
+  if(d.pnb!==undefined){S.pn.b=+d.pnb;S.pn.sel=null;save();render();return;}
+  if(d.itm!==undefined){const i=+d.itm;S.pn.sel=S.pn.sel===i?null:i;sSel();save();render();return;}
+  if(d.bin!==undefined)return pnDrop(+d.bin);
+  if(b.id==='pnturn'){S.pn.turn=(S.pn.turn+1)%4;save();render();return;}
+  if(b.id==='pnshuf'){delete S.pn.ord[S.pn.b];S.pn.sel=null;save();render();return;}
+  if(d.star!==undefined){const q=q5(S.r5.i),t=+d.star;q.star=q.star===t?null:t;save();render();return;}
+  if(d.buzz!==undefined){const q=q5(S.r5.i),t=+d.buzz;q.buzz=q.buzz===t?null:t;q.picks=[];q.res=q.res==='bad'?null:q.res;save();render();if(q.buzz!==null){sSel();tStart(TDEF.r5);}return;}
+  if(d.step!==undefined){const i=S.r5.i,it=R5[i],q=q5(i),sk=+d.step;if((!LOP()&&q.buzz===null)||q.picks.includes(sk))return;q.picks.push(sk);sSel();save();
+    if(q.picks.length===it.steps.length)return judge5(q.picks.every((v,k)=>v===k));render();return;}
+  if(d.line!==undefined){const i=S.r5.i,q=q5(i),k=+d.line;if(!LOP()&&q.buzz===null)return;return judge5(k===R5[i].bad,k);}
+  if(b.id==='clr'){const q=q5(S.r5.i);q.picks=[];save();render();return;}
+  if(b.id==='show5'){snap();const q=q5(S.r5.i);q.rev=true;S.st.r5.run=0;tPause();save();render();return;}
+});
+document.addEventListener('input',e=>{const t=e.target.dataset.tn;if(t!==undefined){S.teams[+t].name=e.target.value||('Đội '+(+t+1));save();renderBoard();return;}
+  if(e.target.id==='size'){S.size=Math.max(1,Math.min(300,+e.target.value||40));S.called=[];save();}
+  if(e.target.id==='roster')setRoster(e.target.value);});
+document.addEventListener('keydown',e=>{if(e.target.closest('input'))return;const k=e.key.toLowerCase();
+  if(!$('#call').hidden&&(k==='escape'||k==='enter'||k===' ')){$('#call').hidden=true;e.preventDefault();return;}
+  if(S.view==='show'&&(k==='arrowright'||k==='arrowleft'||k===' ')){e.preventDefault();if(k===' ')$('#shPlay')?.click();else shGo(k==='arrowright'?1:-1);return;}
+  if(k==='arrowright')document.querySelector('[data-nav="1"]')?.click();
+  else if(k==='arrowleft')document.querySelector('[data-nav="-1"]')?.click();
+  else if(k==='enter'&&['r1','r3','r4'].includes(S.view)){e.preventDefault();reveal();}
+  else if(LOP()&&['a','b','c','d'].includes(k)&&['r1','r3','r4'].includes(S.view))answer(k.charCodeAt(0)-97);
+  else if(k==='g'&&LOP()&&!NHA)callSV();
+  else if(k==='t')$('#tmb')?.click();});
+/* ================= LÀM BÀI Ở NHÀ → Google Sheet ================= */
+const hash=t=>{let h=5381;for(const c of t)h=(h*33+c.codePointAt(0))>>>0;return h.toString(36).toUpperCase().padStart(7,'0').slice(-6);};
+function vLogin(){$('#tabs').innerHTML='';$('#board').innerHTML='';$('#ctrl').innerHTML='';
+  $('#stage').innerHTML=`<form class="login" id="svf" autocomplete="on"><h1>Đấu trường Thiết bị</h1>
+   <p>Bài tập về nhà${BAI?` · <b>${esc(BAI)}</b>`:''}. Nhập đúng thông tin; kết quả từng vòng sẽ tự gửi cho giáo viên để tính điểm chuyên cần.</p>
+   <label for="sv1">Mã số sinh viên</label><input id="sv1" name="mssv" inputmode="numeric" required maxlength="12" placeholder="2001230001">
+   <label for="sv2">Họ và tên</label><input id="sv2" name="name" required maxlength="60" placeholder="Nguyễn Văn An">
+   <label for="sv3">Lớp</label>${LOPB?`<input id="sv3" name="lop" value="${esc(LOPB)}" readonly style="background:#F3F4F6;font-weight:800;color:#4B2A8C" title="Lớp theo link giáo viên giao">`:`<input id="sv3" name="lop" required maxlength="20" placeholder="14DHHH01">`}
+   <p class="err" id="sverr" role="alert"></p><button class="btn pri" type="submit">Vào làm bài ▶</button></form>`;}
+document.addEventListener('submit',e=>{if(e.target.id!=='svf')return;e.preventDefault();
+  const m=$('#sv1').value.replace(/\s/g,''),t=$('#sv2').value.trim().replace(/\s+/g,' '),l=$('#sv3').value.trim().toUpperCase().replace(/\s+/g,'');
+  if(!/^\d{8,12}$/.test(m))return $('#sverr').textContent='Mã số sinh viên gồm 8–12 chữ số.';
+  if(t.split(' ').length<2)return $('#sverr').textContent='Nhập đầy đủ họ và tên.';
+  if(!l)return $('#sverr').textContent='Nhập tên lớp.';
+  S.sv={mssv:m,ten:t,lop:l};save();go('home');});
+function payload(r){const st=S.st[r],d=RD[r],t0=(S.t0||{})[r];
+  const p={game:GAME,bai:BAI,mssv:S.sv.mssv,ten:S.sv.ten,lop:S.sv.lop,vn:d.n,vong:d.name,tong:cntQ(r),xong:doneCnt(r),dung:st.ok,sai:st.bad,tile:acc(st),diem:st.pts,phut:t0?Math.round((Date.now()-t0)/6000)/10:''};
+  p.ma=hash([p.mssv,p.vn,p.xong,p.dung,p.sai,p.diem,BAI].join('|'));return p;}
+function sendRound(r){if(!NHA||!S.sv)return;const p=payload(r);if(!p.dung&&!p.sai&&!p.xong)return;
+  S.sent??={};S.gq??=[];if(S.sent[r]?.ma===p.ma)return;
+  S.gq=S.gq.filter(x=>x.vn!==p.vn);S.gq.push(p);save();flush();}
+let FL=false;
+async function flush(){if(!GS||FL||!(S.gq||[]).length)return paintGS();FL=true;paintGS();
+  for(const p of [...S.gq]){try{await fetch(GS,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)});
+      S.gq=S.gq.filter(x=>x!==p&&!(x.vn===p.vn&&x.ma===p.ma));const r=RK[p.vn-1];S.sent[r]={ma:p.ma,at:new Date().toLocaleString('vi-VN')};save();}
+    catch(_){break;}}
+  FL=false;paintGS();}
+function gsMsg(r){const p=S.sv&&payload(r),s=(S.sent||{})[r],w=(S.gq||[]).find(x=>x.vn===RD[r].n);
+  if(!p||(!p.dung&&!p.sai&&!p.xong))return ['','Vòng này chưa có câu trả lời nào nên chưa gửi kết quả.'];
+  if(!GS)return ['wait',`Chụp màn hình gửi giáo viên · mã xác nhận <code>${p.ma}</code> (link chưa gắn Google Sheet).`];
+  if(s&&s.ma===p.ma)return ['ok',`✔ Đã gửi kết quả cho giáo viên lúc ${s.at} · mã xác nhận <code>${s.ma}</code>`];
+  if(w)return FL?['wait','⏳ Đang gửi kết quả…']:['bad',`Chưa gửi được (mất mạng?). <button class="btn" id="gsre">↻ Gửi lại</button>`];
+  return ['wait','⏳ Đang gửi kết quả…'];}
+function paintGS(){const b=$('#gs');if(!b)return;const r=b.dataset.r;
+  if(r){const [c,m]=gsMsg(r);b.className='gsbox '+c;b.innerHTML=m;return;}
+  b.innerHTML='<b>Kết quả đã gửi cho giáo viên</b><br>'+RK.map(x=>{const [c]=gsMsg(x);return `Vòng ${RD[x].n}: ${c==='ok'?'✔ đã gửi':c==='bad'?'✘ chưa gửi được':S.st[x].ok+S.st[x].bad?'⏳ đang gửi':'— chưa làm'}`;}).join(' · ')+
+   ((S.gq||[]).length&&!FL?` <button class="btn" id="gsre">↻ Gửi lại</button>`:'');b.className='gsbox';}
+if(NHA){
+  const _kq=vKQ;vKQ=function(){_kq();$('.kq').insertAdjacentHTML('beforeend',`<div class="gsbox" id="gs" data-r="${S.kq}"></div>`);sendRound(S.kq);paintGS();};
+  const _end=vEnd;vEnd=function(){_end();$('#stage .rhead').insertAdjacentHTML('afterend',`<div class="gsbox" id="gs"></div>`);RK.forEach(sendRound);paintGS();};
+  const _home=vHome;vHome=function(){_home();const h=$('.hero');h.querySelectorAll('.modes,.setup1,.setup,.cards4').forEach(x=>x.remove());
+    h.insertAdjacentHTML('beforeend',`<div class="svcard"><span>👤 <b>${esc(S.sv.ten)}</b> · ${esc(S.sv.mssv)} · Lớp ${esc(S.sv.lop)}${BAI?` · ${esc(BAI)}`:''}</span><span class="sp"></span><button class="btn" id="svchg">Đổi sinh viên</button></div>
+     <p class="hint">Làm lần lượt 6 vòng. Làm hết câu của một vòng rồi bấm <b>Kết thúc vòng 🏁</b>: kết quả vòng đó tự gửi cho giáo viên. Được làm lại (<b>↻ Chơi lại vòng này</b>) để cải thiện; giáo viên lấy kết quả tốt nhất. Bấm <b>Xem đáp án</b> thì câu đó không được tính đúng.</p>`);};
+  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.id==='gsre'){flush();return;}
+    if(b.id==='svchg'){if(!confirm('Đổi sinh viên sẽ xóa toàn bộ tiến độ làm bài trên máy này. Tiếp tục?'))return;S=fresh();S.mode='lop';save();render();}},true);
+  addEventListener('online',flush);
+  /* đổi lời hướng dẫn dành cho giáo viên thành lời cho sinh viên tự làm */
+  const TX=[['Gọi sinh viên trả lời, bấm vào phương án bạn ấy chọn.','Bấm vào phương án bạn chọn.'],
+    ['Gọi sinh viên ghép một thẻ cam với một thẻ xanh (ví dụ “3 – E”) và giải thích.','Ghép một thẻ cam với một thẻ xanh.'],
+    ['Gọi sinh viên: chọn một thẻ ở giữa, rồi bấm vào nhóm bạn ấy nói.','Chọn một thẻ ở giữa, rồi bấm vào nhóm đúng.'],
+    ['Gọi sinh viên đọc thứ tự các chữ cái; giáo viên bấm lần lượt theo lời bạn ấy.','Bấm lần lượt các bước theo đúng thứ tự.'],
+    ['Gọi sinh viên chỉ ra dòng sai đầu tiên; giáo viên bấm vào dòng đó, sau đó bạn ấy nêu cách sửa.','Bấm vào dòng sai đầu tiên, sau đó tự nêu cách sửa.'],
+    ['Mời bạn khác trả lời','Thử lại nhé'],['Mời bạn khác thử','Thử lại nhé'],['Điểm cả lớp','Tổng điểm của bạn'],['điểm của lớp','điểm của bạn'],
+    ['Cả lớp nắm rất chắc phần này!','Bạn nắm rất chắc phần này!'],['Phần này cần giảng lại.','Bạn nên xem lại phần này trong 📽 Phòng chiếu.'],
+    ['Tổng kết cả lớp','Kết quả của bạn'],['Câu nên giảng lại','Câu nên xem lại'],['chưa ai đúng','chưa đúng']];
+  const fixT=root=>{const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){let v=n.nodeValue,o=v;for(const [a,b] of TX)if(v.includes(a))v=v.split(a).join(b);if(v!==o)n.nodeValue=v;}};
+  new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(x=>x.nodeType===1?fixT(x):x.nodeType===3&&fixT(x.parentNode||document.body)))).observe(document.body,{childList:true,subtree:true});
+  fixT(document.body);
+}
+addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(VIEWS.includes(v)&&v!==S.view)go(v);});
+{const h=location.hash.slice(1);if(VIEWS.includes(h))S.view=h;}
+tReset(TDEF[CR()]||0);render();if(NHA)flush();
+
+</script>
+
+</body></html>
